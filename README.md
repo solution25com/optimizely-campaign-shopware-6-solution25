@@ -1,24 +1,22 @@
 # Optimizely Campaign - Shopware 6 Plugin - Coming Soon
 
 ## ✨ Coming Soon - Shopware 6 Plugin
-Integrate Optimizely Campaign with your Shopware 6 store to enhance email marketing, automate catalog exports, track customer behavior, and send transactional emails.
+Empower your email marketing with Optimizely Campaign. Sync customer data, automate product catalog exports, track post-click actions, and send transactional emails.   
 
-🚀 Why Choose Optimizely Campaign?
-✔ Automated Customer Data Sync – Keep your email lists always up to date.
-✔ Transactional Email Integration – Ensure order confirmations, account notifications, and other critical emails reach customers.
-✔ Product Catalog Export – Keep email campaigns aligned with real-time inventory updates.
-✔ Behavior-Based Targeting – Track visits, add-to-cart actions, and purchases to build precise customer segments.
-✔ User-Friendly Admin Panel – Easily configure settings and manage campaigns directly within Shopware.
+## 🚀 Why Choose Optimizely Campaign?  
+- **Seamless Transactional Emails** – Send order confirmations, account updates, and more.  
+- **Automated Subscriber Sync** – Keep your newsletter lists always up to date.  
+- **Product Catalog Export** – Ensure promotional emails always feature the latest products.  
+- **Customer Behavior Tracking** – Capture views, cart actions, and purchases to build targeted campaigns.  
+- **Easy Configuration** – Fully managed within Shopware’s admin panel.  
 
-📌 Features
-✔ Real-Time Customer Data Sync – Keep subscriber lists up to date automatically.
-✔ Transactional Mail Automation – Send order confirmations, password resets, and other key emails via Optimizely.
-✔ Product Catalog Export – Ensure promotional emails always reflect the latest inventory.
-✔ Post-Click Tracking – Monitor customer interactions after opening emails.
-✔ Targeted Segments – Use behavior-based tracking to create effective email campaigns.
-✔ Shopware 6 Compatibility – Fully optimized for the latest Shopware version.
-✔ Intuitive Admin Panel – Manage all campaign settings in one place.
-✔ Secure & Reliable – Industry-standard data protection and API integration.
+## 📌 Features  
+- **Transactional Email Integration** – Automate crucial customer communications.  
+- **Subscriber List Synchronization** – Always have accurate subscriber data.  
+- **Product Catalog Export Automation** – Ensure your promotions stay current.  
+- **Real-Time Customer Tracking** – Use behavioral insights for better targeting.  
+- **User-Friendly Setup** – No technical expertise required.  
+- **Fully Compatible with Shopware 6** – Optimized for a smooth experience.  
 
 ## 🎉 Stay Updated
 Follow us for updates and more information:
