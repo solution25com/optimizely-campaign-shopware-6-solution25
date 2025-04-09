@@ -1,0 +1,1 @@
+# optimizely-campaign-shopware-6-solution25
