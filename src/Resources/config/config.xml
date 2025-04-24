@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
+
+    <card>
+        <title>General settings</title>
+        <title lang="de-DE">Allgemeine Einstellungen</title>
+
+        <input-field type="bool">
+            <name>active</name>
+            <label>Plugin active in this shop</label>
+            <label lang="de-DE">Plugin in diesem Shop aktiv</label>
+            <defaultValue>true</defaultValue>
+            <!--            <required>true</required>-->
+        </input-field>
+
+        <input-field>
+            <name>optimizelyOptInId</name>
+            <label>Opt-In Id</label>
+            <label lang="de-DE">Opt-In Id</label>
+            <helpText>This value will be used for the double opt-in process. Please enter a proper id</helpText>
+            <helpText lang="de-DE">der Wert dieses Feldes wird für den Double Opt-In Prozess verwendet. Bitte tragen Sie
+                hier die entsprechende ID ein
+            </helpText>
+            <!--            <required>true</required>-->
+        </input-field>
+
+        <input-field>
+            <name>optimizelyAuthCode</name>
+            <label>Authorization Code</label>
+            <label lang="de-DE">Autorisierungs-Code</label>
+            <helpText>the authorization code is used for registration, logout and change of customer data</helpText>
+            <helpText lang="de-DE">der Wert dieses Feldes wird für die An- und Abmeldung, sowie für die Änderung der
+                Kundendaten verwendet
+            </helpText>
+            <!--            <required>true</required>-->
+        </input-field>
+    </card>
+
+    <card>
+        <title>Product export settings</title>
+        <title lang="de-DE">Produktexport Einstellungen</title>
+
+        <input-field type="bool">
+            <name>runExport</name>
+            <label>Product export</label>
+            <label lang="de-DE">Produktexport</label>
+            <defaultValue>true</defaultValue>
+            <!--            <required>true</required>-->
+        </input-field>
+
+        <input-field>
+            <name>exportName</name>
+            <label lang="de-DE">Export Name</label>
+            <defaultValue>product.csv</defaultValue>
+        </input-field>
+
+        <!--    <input-field>-->
+        <!--        <name>exportLink</name>-->
+        <!--        <label>Product export link</label>-->
+        <!--        <label lang="de-DE">Produktexport Link</label>-->
+        <!--        &lt;!&ndash;            <required>true</required>&ndash;&gt;-->
+        <!--    </input-field>-->
+
+        <input-field>
+            <name>sftpUsername</name>
+            <label>SFTP Username</label>
+            <label lang="de-DE">SFTP Benutzername</label>
+            <!--            <required>true</required>-->
+        </input-field>
+
+        <input-field type="password">
+            <name>sftpPassword</name>
+            <label>SFTP keyfile password</label>
+            <label lang="de-DE">SFTP Keyfile Passwort</label>
+            <!--            <required>true</required>-->
+        </input-field>
+
+        <input-field type="textarea">
+            <name>sftpPrivateKey</name>
+            <label>SFTP Private Keyfile</label>
+            <label lang="de-DE">SFTP Private Keyfile</label>
+            <!--            <required>true</required>-->
+        </input-field>
+    </card>
+    <card>
+
+        <title>Event Configuration</title>
+        <title lang="de-DE">Ereignis-Konfiguration</title>
+        <input-field>
+            <name>optimizelyBaseUrl</name>
+            <label>PostClick Base URL</label>
+            <label lang="de-DE">PostClick-Basis-URL</label>
+            <helpText>Sending Domain</helpText>
+            <helpText lang="de-DE">Der Wert dieses Feldes wird für die sendende Domäne verwendet</helpText>
+            <placeholder>Example: http://example.com/pc</placeholder>
+            <placeholder lang="de-DE">Beispiel: http://example.com/pc</placeholder>
+            <required>true</required>
+        </input-field>
+
+        <input-field>
+            <name>optimizelyAuthToken</name>
+            <label>Authorization PostClick Code</label>
+            <label lang="de-DE">Autorisierungs-PostClick-Code</label>
+            <helpText>Client Auth Token</helpText>
+            <helpText lang="de-DE">der Wert dieses Feldes wird für die An- und Abmeldung, sowie für die Änderung der
+                Kundendaten verwendet
+            </helpText>
+            <required>true</required>
+        </input-field>
+
+        <input-field>
+            <name>optimizelyClientId</name>
+            <label>Client PostClick Code</label>
+            <label lang="de-DE">Autorisierungs-PostClick-Code</label>
+            <helpText>Client ID key</helpText>
+            <helpText lang="de-DE">der Wert dieses Feldes wird für die An- und Abmeldung, sowie für die Änderung der
+                Kundendaten verwendet
+            </helpText>
+            <required>true</required>
+        </input-field>
+
+        <input-field type="bool">
+            <name>enableAddToBasket</name>
+            <label>Enable Add to Basket Event</label>
+            <defaultValue>false</defaultValue>
+        </input-field>
+
+        <input-field type="textarea">
+            <name>addToBasketField</name>
+            <label>Add to basket Param</label>
+            <helpText>
+                Options: productId,productName,productQuantity,productPrice,categoryNames
+            </helpText>
+            <helpText lang="de-DE">
+                Optionen: productId,productName,productQuantity,productPrice,categoryNames
+            </helpText>
+            <placeholder>Options: productId,productName,productQuantity,productPrice,categoryNames</placeholder>
+            <placeholder lang="de-DE">Optionen: productId,productName,productQuantity,productPrice,categoryNames</placeholder>
+            <label lang="de-DE">Add to basket Param</label>
+        </input-field>
+
+        <input-field type="bool">
+            <name>enablePurchase</name>
+            <label>Enable Purchase Event</label>
+            <defaultValue>false</defaultValue>
+        </input-field>
+
+        <input-field type="textarea">
+            <name>purchaseField</name>
+            <label>Purchase Param</label>
+            <helpText>
+                Options: orderId,productName,productQuantity,categoryNames,totalPrice
+            </helpText>
+            <helpText lang="de-DE">
+                Optionen: orderId,productName,productQuantity,categoryNames,totalPrice
+            </helpText>
+            <placeholder>Options: orderId,productName,productQuantity,categoryNames,totalPrice</placeholder>
+            <placeholder lang="de-DE">Optionen: orderId,productName,productQuantity,categoryNames,totalPrice</placeholder>
+            <label lang="de-DE">Purchase Param</label>
+        </input-field>
+
+        <input-field type="bool">
+            <name>enableProductView</name>
+            <label>Enable Product Event</label>
+            <defaultValue>false</defaultValue>
+        </input-field>
+
+        <input-field type="textarea">
+            <name>productField</name>
+            <label>Product Param</label>
+            <helpText>
+                Options: productId,productName,netPrice,activeNavItem
+            </helpText>
+            <helpText lang="de-DE">
+                Optionen: productId,productName,netPrice,activeNavItem
+            </helpText>
+            <placeholder>Options: productId,productName,netPrice,activeNavItem</placeholder>
+            <placeholder lang="de-DE">Optionen: productId,productName,netPrice,activeNavItem</placeholder>
+            <label lang="de-DE">Product view</label>
+        </input-field>
+
+    </card>
+</config>
+

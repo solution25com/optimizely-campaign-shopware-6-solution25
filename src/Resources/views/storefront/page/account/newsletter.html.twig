@@ -1,0 +1,17 @@
+{% sw_extends '@Storefront/storefront/page/account/newsletter.html.twig' %}
+
+{% block page_account_overview_newsletter_content_success %}
+    {% set hasFlashes = false %}
+    <div class="newsletter-alerts">
+        {% for type, flashMessages in app.flashes %}
+            {% sw_include '@Storefront/storefront/utilities/alert.html.twig' with { type: type, list: flashMessages } %}
+            {% set hasFlashes = true %}
+        {% endfor %}
+    </div>
+
+    {% if hasFlashes %}
+        {% set messages = [] %}
+    {% endif %}
+
+    {{ parent() }}
+{% endblock %}

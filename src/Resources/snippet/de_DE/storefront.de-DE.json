@@ -1,0 +1,9 @@
+{
+    "OptimizelyCampaign": {
+        "recipientAlreadyRegistered": "Sie haben die Registrierung schon bestätigt",
+        "recipientSuccessfulCreated": "Sie haben die Registrierung bestätigt",
+        "recipientSuccessfulUnsubscribed": "Sie wurden vom Newsletter abgemeldet",
+        "recipientWrongData": "Fehler: falsche Daten.",
+        "pleaseConfirmYourRegister": "Vielen Dank. Wir haben Ihnen eine Bestätigungsemail gesendet. Klicken Sie auf den enthaltenen Link um Ihre Anmeldung zu bestätigen."
+    }
+}

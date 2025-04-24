@@ -1,0 +1,213 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="OptimizelyCampaign\Controller\ApiNewsletterRecipientController" public="true">
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry"/>
+            <argument type="service" id="serializer"/>
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder"/>
+            <argument type="service"
+                      id="Shopware\Core\Framework\DataAbstractionLayer\EntityProtection\EntityProtectionValidator"/>
+            <argument type="service" id="Shopware\Core\Framework\Api\Acl\AclCriteriaValidator"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+            <call method="setEventDispatcher">
+                <argument type="service" id="event_dispatcher"/>
+            </call>
+        </service>
+
+        <service id="OptimizelyCampaign\Controller\ApiCustomerController" public="true">
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry"/>
+            <argument type="service" id="serializer"/>
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder"/>
+            <argument type="service"
+                      id="Shopware\Core\Framework\DataAbstractionLayer\EntityProtection\EntityProtectionValidator"/>
+            <argument type="service" id="Shopware\Core\Framework\Api\Acl\AclCriteriaValidator"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+            <call method="setEventDispatcher">
+                <argument type="service" id="event_dispatcher"/>
+            </call>
+        </service>
+
+        <service id="OptimizelyCampaign\Core\Checkout\Customer\SalesChannel\ChangeEmailRoute"
+                 decorates="Shopware\Core\Checkout\Customer\SalesChannel\ChangeEmailRoute" public="true">
+            <argument type="service"
+                      id="OptimizelyCampaign\Core\Checkout\Customer\SalesChannel\ChangeEmailRoute.inner"/>
+            <argument type="service" id="customer.repository"/>
+            <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
+        </service>
+
+        <service id="OptimizelyCampaign\Log\CustomLogger">
+            <argument type="service" id="logger"/>
+        </service>
+
+        <service id="OptimizelyCampaign\Entity\ErrorQueue\ErrorQueueEntityDefinition">
+            <tag name="shopware.entity.definition" entity="optimizely_campaign_error_queue"/>
+        </service>
+
+        <service id="OptimizelyCampaign\Components\OptimizelyAPI">
+            <argument type="service" id="OptimizelyCampaign\Log\CustomLogger"/>
+        </service>
+
+        <service id="OptimizelyCampaign\Service\NewsletterService">
+            <argument type="service" id="OptimizelyCampaign\Components\OptimizelyAPI"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="newsletter_recipient.repository"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="optimizely_campaign_error_queue.repository"/>
+            <argument type="service" id="customer.repository"/>
+            <argument type="service" id="OptimizelyCampaign\Log\CustomLogger"/>
+            <argument type="service" id="service_container"/>
+            <argument type="service" id="event_dispatcher"/>
+        </service>
+
+        <service id="OptimizelyCampaign\Subscriber\MailBeforeSentSubscriber">
+            <argument type="service" id="OptimizelyCampaign\Log\CustomLogger"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Shopware\Core\Framework\Adapter\Twig\StringTemplateRenderer"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="OptimizelyCampaign\Components\OptimizelyAPI"/>
+            <argument type="service" id="optimizely_campaign_error_queue.repository"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="OptimizelyCampaign\Subscriber\MailTemplateSubscriber">
+            <argument type="service" id="OptimizelyCampaign\Log\CustomLogger"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="OptimizelyCampaign\Subscriber\NewsletterSubscriber">
+            <argument type="service" id="OptimizelyCampaign\Log\CustomLogger"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="newsletter_recipient.repository"/>
+            <argument type="service" id="OptimizelyCampaign\Service\NewsletterService"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="OptimizelyCampaign\Storefront\Page\OptimizelyCampaign\OptimizelyCampaignConfirmationPageLoader">
+            <argument id="Shopware\Storefront\Page\GenericPageLoader" type="service"/>
+            <argument id="event_dispatcher" type="service"/>
+        </service>
+
+        <service id="OptimizelyCampaign\Storefront\Controller\OptimizelyCampaignController" public="true">
+            <argument
+                    id="OptimizelyCampaign\Storefront\Page\OptimizelyCampaign\OptimizelyCampaignConfirmationPageLoader"
+                    type="service"/>
+            <argument id="OptimizelyCampaign\Service\NewsletterService" type="service"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+            <call method="setTwig">
+                <argument type="service" id="twig"/>
+            </call>
+
+        </service>
+
+        <service id="OptimizelyCampaign\Service\ApiRequestRetryService">
+            <argument type="service" id="optimizely_campaign_error_queue.repository"/>
+            <argument type="service" id="OptimizelyCampaign\Components\OptimizelyAPI"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="OptimizelyCampaign\Log\CustomLogger"/>
+        </service>
+
+        <service id="OptimizelyCampaign\ScheduledTask\ApiRequestRetryTask">
+            <tag name="shopware.scheduled.task"/>
+        </service>
+
+        <service id="OptimizelyCampaign\ScheduledTask\ApiRequestRetryTaskHandler">
+            <argument type="service" id="scheduled_task.repository"/>
+            <argument type="service" id="OptimizelyCampaign\Log\CustomLogger"/>
+            <argument type="service" id="OptimizelyCampaign\Service\ApiRequestRetryService"/>
+            <tag name="messenger.message_handler"/>
+        </service>
+
+        <service id="OptimizelyCampaign\Subscriber\AddressSubscriber">
+            <argument type="service" id="OptimizelyCampaign\Log\CustomLogger"/>
+            <argument type="service" id="OptimizelyCampaign\Service\NewsletterService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="OptimizelyCampaign\Subscriber\CustomerSubscriber">
+            <argument type="service" id="OptimizelyCampaign\Log\CustomLogger"/>
+            <argument type="service" id="OptimizelyCampaign\Service\NewsletterService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="newsletter_recipient.repository"/>
+            <argument type="service" id="customer.repository"/>
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="OptimizelyCampaign\Service\ProductExportService">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="product.repository"/>
+            <argument type="service" id="product_export.repository"/>
+            <argument type="service" id="product_stream.repository"/>
+            <argument type="service" id="currency.repository"/>
+            <argument type="service" id="language.repository"/>
+            <argument type="service" id="OptimizelyCampaign\Log\CustomLogger"/>
+            <argument type="service" id="twig"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\CachedSalesChannelContextFactory"/>
+
+        </service>
+
+        <!--SM custom-->
+
+        <service id="OptimizelyCampaign\Service">
+            <argument type="service" id="product_stream.repository"/>
+        </service>
+
+        <service id="OptimizelyCampaign\ScheduledTask\ProductExportTask">
+            <tag name="shopware.scheduled.task"/>
+        </service>
+
+        <service id="OptimizelyCampaign\ScheduledTask\ProductExportTaskHandler">
+            <argument type="service" id="scheduled_task.repository"/>
+            <argument type="service" id="OptimizelyCampaign\Log\CustomLogger"/>
+            <argument type="service" id="OptimizelyCampaign\Service\ProductExportService"/>
+            <tag name="messenger.message_handler"/>
+        </service>
+
+        <!--        <service id="OptimizelyCampaign\Subscriber\CookieRetrievalSubscriber" >-->
+        <!--            <argument type="service" id="request_stack" />-->
+        <!--            <tag name="kernel.event_subscriber" />-->
+        <!--        </service>-->
+
+        <!--        <service id="OptimizelyCampaign\Subscriber\PostClickTrackingSubscriber" >-->
+        <!--            <argument type="service" id="request_stack" />-->
+        <!--            <tag name="kernel.event_subscriber" />-->
+        <!--        </service>-->
+
+        <service id="GuzzleHttp\Client" class="GuzzleHttp\Client">
+            <argument type="collection">
+                <argument key="base_uri">https://api.example.com</argument>
+                <argument key="timeout">30</argument>
+            </argument>
+        </service>
+
+        <service id="OptimizelyCampaign\Subscriber\PostClickSubscriber">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="GuzzleHttp\Client"/>
+            <argument type="service" id="request_stack"/>
+            <argument type="service" id="category.repository"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="OptimizelyCampaign\Service\CustomCookieProvider"
+                 decorates="Shopware\Storefront\Framework\Cookie\CookieProviderInterface">
+            <argument type="service"
+                      id="OptimizelyCampaign\Service\CustomCookieProvider.inner"/>
+        </service>
+
+    </services>
+</container>

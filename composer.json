@@ -1,0 +1,45 @@
+{
+    "name": "optimizely/campaign",
+    "description": "Optimizely Campaign",
+    "version": "v1.0.11",
+    "type": "shopware-platform-plugin",
+    "authors": [
+        {
+            "name": "Optimizely Inc",
+            "homepage": "https://www.optimizely.com/"
+        }
+    ],
+    "require": {
+        "phpseclib/phpseclib": "^2.0|^3.0",
+        "shopware/core": ">=6.3.5 <6.5",
+        "shopware/storefront": ">=6.3.5 <6.5"
+    },
+    "minimum-stability": "RC",
+    "license": "proprietary",
+    "autoload": {
+        "psr-4": {
+            "OptimizelyCampaign\\": "src/"
+        }
+    },
+    "extra": {
+        "shopware-plugin-class": "OptimizelyCampaign\\OptimizelyCampaign",
+        "plugin-icon": "src/Resources/config/plugin.png",
+        "copyright": "(c) by Optimizely Inc",
+        "label": {
+            "de-DE": "Optimizely Campaign",
+            "en-GB": "Optimizely Campaign"
+        },
+        "manufacturerLink": {
+            "de-DE": "",
+            "en-GB": ""
+        },
+        "supportLink": {
+            "de-DE": "",
+            "en-GB": ""
+        },
+        "description": {
+            "de-DE": "",
+            "en-GB": ""
+        }
+    }
+}

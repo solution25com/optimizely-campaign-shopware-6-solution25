@@ -1,0 +1,9 @@
+{
+    "OptimizelyCampaign": {
+        "recipientAlreadyRegistered": "You already confirmed the subscription",
+        "recipientSuccessfulCreated": "You confirmed your subscription.",
+        "recipientSuccessfulUnsubscribed": "Successfully unsubscribed from newsletter.",
+        "recipientWrongData": "Error: Wrong data.",
+        "pleaseConfirmYourRegister": "Thank you. We have sent you an confirmation email. Click on the link to confirm you subscription."
+    }
+}
