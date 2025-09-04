@@ -12,7 +12,7 @@ class TransactionEmailRequest extends AbstractOptimizelyRequest
     /**
      * @var string
      */
-    protected $bmMailingId; //bmMailingId
+    protected $bmMailingId; // bmMailingId
 
     /**
      * @var array
@@ -28,7 +28,7 @@ class TransactionEmailRequest extends AbstractOptimizelyRequest
     {
         return array_merge([
             'bmRecipientId' => $this->getEmail(),
-            'bmMailingId' => $this->getBmMailingId()
+            'bmMailingId' => $this->getBmMailingId(),
         ], $this->getTemplateData());
     }
 
@@ -42,7 +42,7 @@ class TransactionEmailRequest extends AbstractOptimizelyRequest
         return 'sendtransactionmail';
     }
 
-    public function setAuthCode(string $authCode)
+    public function setAuthCode(string $authCode): void
     {
         $this->authCode = $authCode;
     }
@@ -52,49 +52,31 @@ class TransactionEmailRequest extends AbstractOptimizelyRequest
         return $this->authCode;
     }
 
-    /**
-     * @return string
-     */
     public function getEmail(): string
     {
         return $this->email;
     }
 
-    /**
-     * @param string $email
-     */
     public function setEmail(string $email): void
     {
         $this->email = $email;
     }
 
-    /**
-     * @return string
-     */
     public function getBmMailingId(): string
     {
         return $this->bmMailingId;
     }
 
-    /**
-     * @param string $bmMailingId
-     */
     public function setBmMailingId(string $bmMailingId): void
     {
         $this->bmMailingId = $bmMailingId;
     }
 
-    /**
-     * @return array
-     */
     public function getTemplateData(): array
     {
         return $this->templateData;
     }
 
-    /**
-     * @param array $templateData
-     */
     public function setTemplateData(array $templateData): void
     {
         $this->templateData = $templateData;

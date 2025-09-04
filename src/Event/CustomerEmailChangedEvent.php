@@ -77,17 +77,11 @@ class CustomerEmailChangedEvent extends Event
             ->add('customer', new EntityType(CustomerDefinition::class));
     }
 
-    /**
-     * @return string
-     */
     public function getOldEmail(): string
     {
         return $this->oldEmail;
     }
 
-    /**
-     * @return string
-     */
     public function getNewEmail(): string
     {
         return $this->newEmail;

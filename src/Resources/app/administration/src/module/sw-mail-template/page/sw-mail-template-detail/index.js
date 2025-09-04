@@ -4,5 +4,5 @@ import './sw-mail-template-detail.scss';
 const { Component, Mixin } = Shopware;
 
 Component.override('sw-mail-template-detail', {
-    template
+    template,
 });

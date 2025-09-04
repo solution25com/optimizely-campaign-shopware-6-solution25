@@ -1,14 +1,12 @@
 <?php declare(strict_types=1);
 
-
 namespace OptimizelyCampaign\Subscriber;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\Request;
-use PHPUnit\Event\Dispatcher;
 use Shopware\Core\Checkout\Cart\Event\AfterLineItemAddedEvent;
+use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -16,34 +14,36 @@ use Shopware\Storefront\Page\Checkout\Finish\CheckoutFinishPageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 
 class PostClickSubscriber implements EventSubscriberInterface
 {
     private SystemConfigService $systemConfigService;
-    private RequestStack $requestStack;
-    private bool $enableAddToBasket;
-    private bool $enablePurchase;
-    private bool $enableProductView;
-    private $logger;
-    private $client;
-    private EntityRepository $category;
 
+    private RequestStack $requestStack;
+
+    private bool $enableAddToBasket;
+
+    private bool $enablePurchase;
+
+    private bool $enableProductView;
+
+    private $logger;
+
+    private $httpClient;
+
+    private EntityRepository $category;
 
     public function __construct(
         SystemConfigService $systemConfigService,
-        Client              $httpClient,
-        RequestStack        $requestStack,
-        EntityRepository    $category
-    )
-    {
+        Client $httpClient,
+        RequestStack $requestStack,
+        EntityRepository $category
+    ) {
         $this->systemConfigService = $systemConfigService;
         $this->httpClient = $httpClient;
         $this->requestStack = $requestStack;
         $this->category = $category;
     }
-
 
     public static function getSubscribedEvents(): array
     {
@@ -116,7 +116,7 @@ class PostClickSubscriber implements EventSubscriberInterface
         }
 
         foreach ($basketMapping as $key => $mappedKey) {
-            if (!in_array($mappedKey, $configParams)) {
+            if (!\in_array($mappedKey, $configParams, true)) {
                 unset($basketData[$key]);
             }
         }
@@ -133,7 +133,7 @@ class PostClickSubscriber implements EventSubscriberInterface
 
         $queryString = [];
         foreach ($finalValues as $key => $value) {
-            $queryString[] = urlencode($key) . '=' . urlencode((string)$value);
+            $queryString[] = urlencode($key) . '=' . urlencode((string) $value);
         }
         $finalUrl = $base_url . '?' . implode('&', $queryString);
 
@@ -152,9 +152,9 @@ class PostClickSubscriber implements EventSubscriberInterface
         $onPurchaseCookie = $event->getRequest()->cookies->getBoolean('onPurchaseOrder');
         $userConfig = $this->getPurchaseConfigs();
 
-        if (!$this->isEventEnabled('enablePurchase') ||
-            $conditionAndEmailCheck === null ||
-            !$onPurchaseCookie || !$userConfig) {
+        if (!$this->isEventEnabled('enablePurchase')
+            || $conditionAndEmailCheck === null
+            || !$onPurchaseCookie || !$userConfig) {
             return;
         }
 
@@ -212,7 +212,7 @@ class PostClickSubscriber implements EventSubscriberInterface
             ];
 
             foreach ($purchaseMapping as $key => $mappedKey) {
-                if (!in_array($mappedKey, $configParams)) {
+                if (!\in_array($mappedKey, $configParams, true)) {
                     unset($purchaseData[$key]);
                 }
             }
@@ -221,7 +221,7 @@ class PostClickSubscriber implements EventSubscriberInterface
 
             $queryString = [];
             foreach ($finalValues as $key => $value) {
-                $queryString[] = urlencode($key) . '=' . urlencode((string)$value);
+                $queryString[] = urlencode($key) . '=' . urlencode((string) $value);
             }
 
             $queryString = implode('&', $queryString);
@@ -230,7 +230,6 @@ class PostClickSubscriber implements EventSubscriberInterface
             $this->sendRequest($finalUrl);
         }
     }
-
 
     public function onProductView(ProductPageLoadedEvent $event): void
     {
@@ -243,11 +242,10 @@ class PostClickSubscriber implements EventSubscriberInterface
         $onProductViewCookie = $event->getRequest()->cookies->getBoolean('onProductView');
         $userConfig = $this->getProductViewConfigs();
 
-        if (!$this->isEventEnabled('enableProductView') || $conditionAndEmailCheck == null ||
-            !$onProductViewCookie || !$userConfig) {
+        if (!$this->isEventEnabled('enableProductView') || $conditionAndEmailCheck === null
+            || !$onProductViewCookie || !$userConfig) {
             return;
         }
-
 
         $userConfig = $this->getProductViewConfigs();
         $configParams = explode(',', $userConfig);
@@ -255,12 +253,27 @@ class PostClickSubscriber implements EventSubscriberInterface
         foreach ($configParams as $key => $value) {
             $configParams[$key] = trim($value);
         }
+        $categoryIds = $event->getPage()->getProduct()->getCategoryTree();
+        $lastCategoryId = null;
+        if ($categoryIds) {
+            $lastCategoryId = array_pop($categoryIds);
+        }
+        $categoryName = '';
+        $category = $this->category->search(
+            (new Criteria([$lastCategoryId]))->addAssociation('parent'),
+            $event->getContext()
+        )->first();
+
+        /** @var CategoryEntity|null $category */
+        if ($category) {
+            $categoryName = $category->getTranslation('name');
+        }
 
         $productData = [
             'gvalue1' => $event->getPage()->getProduct()->getTranslated()['name'],
-            'gvalue2' => $event->getPage()->getHeader()->getNavigation()->getActive()->getTranslated()['name'],
+            'gvalue2' => $categoryName,
             'gvalue3' => $event->getPage()->getProduct()->getId(),
-            'fvalue1' => $event->getPage()->getProduct()->getCurrencyPrice('')->getNet()
+            'fvalue1' => $event->getPage()->getProduct()->getCurrencyPrice('')->getNet(),
         ];
 
         $productMapping = [
@@ -271,7 +284,7 @@ class PostClickSubscriber implements EventSubscriberInterface
         ];
 
         foreach ($productMapping as $key => $mappedKey) {
-            if (!in_array($mappedKey, $configParams)) {
+            if (!\in_array($mappedKey, $configParams, true)) {
                 unset($productData[$key]);
             }
         }
@@ -291,13 +304,13 @@ class PostClickSubscriber implements EventSubscriberInterface
             if ($key === 'gvalue4') {
                 $queryString[] = urlencode($key) . '=' . $value;
             } else {
-                $queryString[] = urlencode($key) . '=' . urlencode((string)$value);
+                $queryString[] = urlencode($key) . '=' . urlencode((string) $value);
             }
         }
 
         $queryString = implode('&', $queryString);
         $finalUrl = $base_url . '?' . $queryString;
-        
+
         $this->sendRequest($finalUrl);
     }
 
@@ -316,16 +329,16 @@ class PostClickSubscriber implements EventSubscriberInterface
         }
     }
 
-
     private function getUserEmail(SalesChannelContext $context): ?string
     {
         $customer = $context->getCustomer();
-        return $customer !== null ? $customer->getEmail() : null;
+
+        return $customer?->getEmail();
     }
 
     private function isEventEnabled(string $eventName): bool
     {
-        return (bool)$this->systemConfigService->get('OptimizelyCampaign.config.' . $eventName);
+        return (bool) $this->systemConfigService->get('OptimizelyCampaign.config.' . $eventName);
     }
 
     private function getAuth()
@@ -346,7 +359,6 @@ class PostClickSubscriber implements EventSubscriberInterface
     private function getProductViewConfigs()
     {
         return $this->systemConfigService->get('OptimizelyCampaign.config.productField');
-
     }
 
     private function getPurchaseConfigs()
@@ -362,7 +374,8 @@ class PostClickSubscriber implements EventSubscriberInterface
     private function getEmailFromCookie(): ?string
     {
         $request = $this->requestStack->getCurrentRequest();
-        return $request !== null && $request->cookies !== null ? $request->cookies->get('customerEmail') : null;
+
+        return $request?->cookies->get('customerEmail');
     }
 
     private function retrieveAndStoreEmail($salesChannelContext): ?string
@@ -373,9 +386,10 @@ class PostClickSubscriber implements EventSubscriberInterface
 
         if ($customerEmail) {
             $this->setEmailCookie($customerEmail);
-        } else if ($request) {
+        } elseif ($request) {
             $customerEmail = $request->cookies->get('customerEmail');
         }
+
         return $customerEmail;
     }
 

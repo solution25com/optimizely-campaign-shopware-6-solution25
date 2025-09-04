@@ -40,65 +40,41 @@ class ErrorQueueEntity extends Entity
      */
     protected $salesChannel;
 
-    /**
-     * @return int
-     */
     public function getRetryCount(): int
     {
         return $this->retryCount;
     }
 
-    /**
-     * @param int $retryCount
-     */
     public function setRetryCount(int $retryCount): void
     {
         $this->retryCount = $retryCount;
     }
 
-    /**
-     * @return \DateTime|null
-     */
     public function getLastRetryAt(): ?\DateTime
     {
         return $this->lastRetryAt;
     }
 
-    /**
-     * @param \DateTime|null $lastRetryAt
-     */
     public function setLastRetryAt(?\DateTime $lastRetryAt): void
     {
         $this->lastRetryAt = $lastRetryAt;
     }
 
-    /**
-     * @return array
-     */
     public function getOptions(): array
     {
         return $this->options;
     }
 
-    /**
-     * @param array $options
-     */
     public function setOptions(array $options): void
     {
         $this->options = $options;
     }
 
-    /**
-     * @return string
-     */
     public function getResponse(): string
     {
         return $this->response;
     }
 
-    /**
-     * @param string $response
-     */
     public function setResponse(string $response): void
     {
         $this->response = $response;
@@ -109,9 +85,6 @@ class ErrorQueueEntity extends Entity
         return $this->salesChannelId;
     }
 
-    /**
-     * @param string $salesChannelId
-     */
     public function setSalesChannelId(string $salesChannelId): void
     {
         $this->salesChannelId = $salesChannelId;
@@ -138,17 +111,11 @@ class ErrorQueueEntity extends Entity
         return $options['method'] ?? '';
     }
 
-    /**
-     * @return SalesChannelEntity|null
-     */
     public function getSalesChannel(): ?SalesChannelEntity
     {
         return $this->salesChannel;
     }
 
-    /**
-     * @param SalesChannelEntity|null $salesChannel
-     */
     public function setSalesChannel(?SalesChannelEntity $salesChannel): void
     {
         $this->salesChannel = $salesChannel;

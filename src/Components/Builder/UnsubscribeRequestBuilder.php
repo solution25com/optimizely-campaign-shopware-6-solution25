@@ -31,10 +31,12 @@ class UnsubscribeRequestBuilder implements BuilderInterface
      * @var EntityRepository
      */
     private $errorQueueRepository;
+
     /**
      * @var string
      */
     private $email;
+
     /**
      * @var string
      */
@@ -60,7 +62,7 @@ class UnsubscribeRequestBuilder implements BuilderInterface
     {
         $salesChannel = $this->getSalesChannel($this->salesChannelId, $this->context);
         if (!($salesChannel instanceof SalesChannelEntity)) {
-            throw new \Exception("Unknown sales channel: ".$this->salesChannelId);
+            throw new \Exception('Unknown sales channel: ' . $this->salesChannelId);
         }
 
         $request = new UnsubscribeRequest(

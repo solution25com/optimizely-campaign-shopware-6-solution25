@@ -6,7 +6,6 @@ use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTask;
 
 class ProductExportTask extends ScheduledTask
 {
-
     public static function getTaskName(): string
     {
         return 'optimizely.productExportTask';

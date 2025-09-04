@@ -10,16 +10,16 @@ use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 
 class OptimizelyCampaign extends Plugin
 {
-    const PLUGIN_CONFIG_ACTIVE = 'OptimizelyCampaign.config.active';
-    const PLUGIN_CONFIG_OPTIVO_OPT_IN_ID = 'OptimizelyCampaign.config.optimizelyOptInId';
-    const PLUGIN_CONFIG_OPTIVO_AUTH_CODE = 'OptimizelyCampaign.config.optimizelyAuthCode';
-    const PLUGIN_CONFIG_RUN_EXPORT = 'OptimizelyCampaign.config.runExport';
-    const PLUGIN_CONFIG_EXPORT_NAME = 'OptimizelyCampaign.config.exportName';
-    //const PLUGIN_CONFIG_EXPORT_LINK = 'OptimizelyCampaign.config.exportLink';
-    const PLUGIN_CONFIG_SFTP_USERNAME = 'OptimizelyCampaign.config.sftpUsername';
-    const PLUGIN_CONFIG_SFTP_PASSWORD = 'OptimizelyCampaign.config.sftpPassword';
-    const PLUGIN_CONFIG_SFTP_PRIVATE_KEY = 'OptimizelyCampaign.config.sftpPrivateKey';
-    const NEWSLETTER_RECIPIENT_OPTIVO_OPT_IN_ID = 'optimizelyNewsletterRecipientOptInId';
+    public const PLUGIN_CONFIG_ACTIVE = 'OptimizelyCampaign.config.active';
+    public const PLUGIN_CONFIG_OPTIVO_OPT_IN_ID = 'OptimizelyCampaign.config.optimizelyOptInId';
+    public const PLUGIN_CONFIG_OPTIVO_AUTH_CODE = 'OptimizelyCampaign.config.optimizelyAuthCode';
+    public const PLUGIN_CONFIG_RUN_EXPORT = 'OptimizelyCampaign.config.runExport';
+    public const PLUGIN_CONFIG_EXPORT_NAME = 'OptimizelyCampaign.config.exportName';
+    // const PLUGIN_CONFIG_EXPORT_LINK = 'OptimizelyCampaign.config.exportLink';
+    public const PLUGIN_CONFIG_SFTP_USERNAME = 'OptimizelyCampaign.config.sftpUsername';
+    public const PLUGIN_CONFIG_SFTP_PASSWORD = 'OptimizelyCampaign.config.sftpPassword';
+    public const PLUGIN_CONFIG_SFTP_PRIVATE_KEY = 'OptimizelyCampaign.config.sftpPrivateKey';
+    public const NEWSLETTER_RECIPIENT_OPTIVO_OPT_IN_ID = 'optimizelyNewsletterRecipientOptInId';
 
     public function install(InstallContext $installContext): void
     {
@@ -29,7 +29,6 @@ class OptimizelyCampaign extends Plugin
     }
 
     /**
-     * @param UninstallContext $context
      * @throws \Doctrine\DBAL\DBALException
      */
     public function uninstall(UninstallContext $context): void
@@ -46,8 +45,6 @@ class OptimizelyCampaign extends Plugin
     private function buildSetupService(Context $context): SetupService
     {
         return new SetupService(
-
-
             $this->container->get('product_stream.repository'),
             $this->container->get('product_stream_filter.repository'),
             $this->container->get('product_export.repository'),

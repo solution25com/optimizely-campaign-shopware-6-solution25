@@ -11,10 +11,10 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class MailTemplateSubscriber implements EventSubscriberInterface
 {
-    const OPTIVO_AUTHCODE = 'optimizelyAuthcode';
-    const OPTIVO_BM_MAIL_ID = 'optimizelyBmMailId';
-    const OPTIVO_ENABLED = 'optimizelyEnabled';
-    const OPTIVO_CONTENT = 'optimizelyContent';
+    public const OPTIVO_AUTHCODE = 'optimizelyAuthcode';
+    public const OPTIVO_BM_MAIL_ID = 'optimizelyBmMailId';
+    public const OPTIVO_ENABLED = 'optimizelyEnabled';
+    public const OPTIVO_CONTENT = 'optimizelyContent';
 
     /**
      * @var LoggerInterface
@@ -32,20 +32,16 @@ class MailTemplateSubscriber implements EventSubscriberInterface
     ) {
         $this->logger = $logger;
         $this->systemConfigService = $systemConfigService;
-
     }
 
     public static function getSubscribedEvents()
     {
         return [
-            MailTemplateEvents::MAIL_TEMPLATE_LOADED_EVENT => 'onMailTemplateLoaded'
+            MailTemplateEvents::MAIL_TEMPLATE_LOADED_EVENT => 'onMailTemplateLoaded',
         ];
     }
 
-    /**
-     * @param EntityLoadedEvent $event
-     */
-    public function onMailTemplateLoaded(EntityLoadedEvent $event)
+    public function onMailTemplateLoaded(EntityLoadedEvent $event): void
     {
         try {
             /** @var MailTemplateEntity $mailTemplate */
@@ -66,7 +62,7 @@ class MailTemplateSubscriber implements EventSubscriberInterface
                 $mailTemplate->setCustomFields($customFields);
             }
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage() . " " . $e->getTraceAsString());
+            $this->logger->error($e->getMessage() . ' ' . $e->getTraceAsString());
         }
     }
 }

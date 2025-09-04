@@ -2,11 +2,10 @@
 
 namespace OptimizelyCampaign\Subscriber;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Cookie;
-use Symfony\Component\HttpFoundation\Response;
 use Shopware\Storefront\Event\StorefrontRenderEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class PostClickTrackingSubscriber implements EventSubscriberInterface
 {
@@ -27,7 +26,7 @@ class PostClickTrackingSubscriber implements EventSubscriberInterface
     public function onPageLoad(StorefrontRenderEvent $event): void
     {
         $request = $this->requestStack->getCurrentRequest();
-        $response = $event->getResponse();
+        $response = $event->get;
 
         $utmSource = $request->query->get('utm_source');
         $utmMedium = $request->query->get('utm_medium');

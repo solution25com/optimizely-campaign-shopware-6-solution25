@@ -2,7 +2,6 @@
 
 namespace OptimizelyCampaign\Subscriber;
 
-use Composer\EventDispatcher\Event;
 use OptimizelyCampaign\Service\NewsletterService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\CustomerEvents;
@@ -43,11 +42,11 @@ class AddressSubscriber implements EventSubscriberInterface
     {
         return [
             CustomerSetDefaultBillingAddressEvent::class => 'onDefaultBillingAddressChanged',
-            CustomerEvents::CUSTOMER_ADDRESS_WRITTEN_EVENT => 'onCustomerAddressWritten'
+            CustomerEvents::CUSTOMER_ADDRESS_WRITTEN_EVENT => 'onCustomerAddressWritten',
         ];
     }
 
-    public function onDefaultBillingAddressChanged(CustomerSetDefaultBillingAddressEvent $event)
+    public function onDefaultBillingAddressChanged(CustomerSetDefaultBillingAddressEvent $event): void
     {
         try {
             if ($this->isPluginActive($event->getSalesChannelId())) {
@@ -57,22 +56,22 @@ class AddressSubscriber implements EventSubscriberInterface
                 );
             }
         } catch (\Exception $exception) {
-            $this->logger->error($exception->getMessage()." ".$exception->getTraceAsString());
+            $this->logger->error($exception->getMessage() . ' ' . $exception->getTraceAsString());
         }
     }
 
-    public function onCustomerAddressWritten(EntityWrittenEvent $event)
+    public function onCustomerAddressWritten(EntityWrittenEvent $event): void
     {
         try {
             /** @var EntityWriteResult $writeResult */
             foreach ($event->getWriteResults() as $writeResult) {
                 $payload = $writeResult->getPayload();
-                if (array_key_exists('customerId', $payload)) {
+                if (\array_key_exists('customerId', $payload)) {
                     $this->newsletterService->synchronizeCustomerData($payload['customerId'], $event->getContext());
                 }
             }
         } catch (\Exception $exception) {
-            $this->logger->error($exception->getMessage()." ".$exception->getTraceAsString());
+            $this->logger->error($exception->getMessage() . ' ' . $exception->getTraceAsString());
         }
     }
 

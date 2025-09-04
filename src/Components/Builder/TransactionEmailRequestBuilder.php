@@ -5,6 +5,7 @@ namespace OptimizelyCampaign\Components\Builder;
 use OptimizelyCampaign\Components\Request\AbstractOptimizelyRequest;
 use OptimizelyCampaign\Components\Request\TransactionEmailRequest;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Content\MailTemplate\Exception\SalesChannelNotFoundException;
 use Shopware\Core\Content\MailTemplate\Service\Event\MailBeforeValidateEvent;
 use Shopware\Core\Framework\Adapter\Twig\StringTemplateRenderer;
 use Shopware\Core\Framework\Context;
@@ -13,7 +14,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Shopware\Core\Content\MailTemplate\Exception\SalesChannelNotFoundException;
 
 class TransactionEmailRequestBuilder implements BuilderInterface
 {
@@ -117,6 +117,21 @@ class TransactionEmailRequestBuilder implements BuilderInterface
         return $request;
     }
 
+    protected function parseOptivoTemplate(string $content): array
+    {
+        $data = explode(';' . \PHP_EOL, $content);
+        $params = [];
+        foreach ($data as $row) {
+            $param = explode('=', $row);
+            if (!empty($param) && \count($param) === 2) {
+                $key = str_replace(\PHP_EOL, '', $param[0]);
+                $params[$key] = $param[1];
+            }
+        }
+
+        return $params;
+    }
+
     private function getSalesChannel(string $salesChannelId, Context $context): ?SalesChannelEntity
     {
         $criteria = new Criteria([$salesChannelId]);
@@ -127,20 +142,5 @@ class TransactionEmailRequestBuilder implements BuilderInterface
             );
 
         return $this->salesChannelRepository->search($criteria, $context)->first();
-    }
-
-    protected function parseOptivoTemplate(string $content): array
-    {
-        $data = explode(';' . PHP_EOL, $content);
-        $params = [];
-        foreach ($data as $row) {
-            $param = explode('=', $row);
-            if (!empty($param) && count($param) === 2) {
-                $key = str_replace(PHP_EOL, '', $param[0]);
-                $params[$key] = $param[1];
-            }
-        }
-
-        return $params;
     }
 }

@@ -5,10 +5,10 @@ namespace OptimizelyCampaign\Entity\ErrorQueue;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
 /**
- * @method void              add(ErrorQueueEntity $entity)
- * @method void              set(string $key, ErrorQueueEntity $entity)
- * @method ErrorQueueEntity[]    getIterator()
- * @method ErrorQueueEntity[]    getElements()
+ * @method void add(ErrorQueueEntity $entity)
+ * @method void set(string $key, ErrorQueueEntity $entity)
+ * @method ErrorQueueEntity[] getIterator()
+ * @method ErrorQueueEntity[] getElements()
  * @method ErrorQueueEntity|null get(string $key)
  * @method ErrorQueueEntity|null first()
  * @method ErrorQueueEntity|null last()

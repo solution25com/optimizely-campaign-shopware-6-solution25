@@ -4,7 +4,6 @@ namespace OptimizelyCampaign\Components\Builder;
 
 use OptimizelyCampaign\Components\Request\AbstractOptimizelyRequest;
 use OptimizelyCampaign\Components\Request\UpdateFieldsRequest;
-use phpDocumentor\Reflection\Types\Boolean;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
@@ -15,7 +14,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-
 
 class UpdateFieldsRequestBuilder implements BuilderInterface
 {
@@ -72,10 +70,9 @@ class UpdateFieldsRequestBuilder implements BuilderInterface
 
     public function build(): AbstractOptimizelyRequest
     {
-
         $salesChannel = $this->getSalesChannel($this->newsletterRecipient->getSalesChannelId(), $this->context);
         if (!($salesChannel instanceof SalesChannelEntity)) {
-            throw new \Exception("Unknown sales channel: ".$this->newsletterRecipient->getSalesChannelId());
+            throw new \Exception('Unknown sales channel: ' . $this->newsletterRecipient->getSalesChannelId());
         }
 
         $request = new UpdateFieldsRequest(
@@ -86,9 +83,9 @@ class UpdateFieldsRequestBuilder implements BuilderInterface
         );
 
         $request->setEmail($this->newsletterRecipient->getEmail());
-        if ($this->newsletterRecipient->getSalutation()){
+        if ($this->newsletterRecipient->getSalutation()) {
             $request->setSalutation($this->newsletterRecipient->getSalutation()->getTranslation('displayName'));
-        }else{
+        } else {
             $request->setSalutation('');
         }
         $request->setFirstname($this->newsletterRecipient->getFirstName() ?? '');
@@ -97,13 +94,13 @@ class UpdateFieldsRequestBuilder implements BuilderInterface
         $request->setZip($this->newsletterRecipient->getZipCode() ?? '');
         $request->setCity($this->newsletterRecipient->getCity() ?? '');
 
-        $request->setPhoneNumber("");
-        $request->setCompany("");
-        $request->setDepartment("");
-        $request->setCustomerGroup("");
-        $request->setVatId("");
-        $request->setCountryIso("");
-        $request->setLanguage("");
+        $request->setPhoneNumber('');
+        $request->setCompany('');
+        $request->setDepartment('');
+        $request->setCustomerGroup('');
+        $request->setVatId('');
+        $request->setCountryIso('');
+        $request->setLanguage('');
 
         $customer = $this->findCustomerByEmail($this->newsletterRecipient->getEmail());
         if ($customer instanceof CustomerEntity) {
@@ -114,13 +111,13 @@ class UpdateFieldsRequestBuilder implements BuilderInterface
             }
             $request->setCompany($customer->getCompany() ?? '');
             $vatIds = $customer->getVatIds() ?? [];
-            if (version_compare(PHP_VERSION, '7.4.0') >= 0) {
+            if (version_compare(\PHP_VERSION, '7.4.0') >= 0) {
                 $request->setVatId(implode(';', $vatIds));
             } else {
-                $request->setVatId(implode($vatIds, ';'));
+                $request->setVatId(implode(';', $vatIds));
             }
             if ($customer->getActiveBillingAddress()) {
-                if (true){
+                if (true) {
                     // debug start
                     $request->setLastname($customer->getLastName());
                     $request->setFirstname($customer->getFirstName());
@@ -131,7 +128,7 @@ class UpdateFieldsRequestBuilder implements BuilderInterface
                     $request->setCountryIso($customer->getActiveBillingAddress()->getCountry()->getIso());
                     $request->setCompany($customer->getActiveBillingAddress()->getCompany() ?? '');
                     $request->setDepartment($customer->getActiveBillingAddress()->getDepartment() ?? '');
-                    // debug end
+                // debug end
                 } else {
                     $request->setStreet($customer->getActiveBillingAddress()->getStreet() ?? '');
                     $request->setZip($this->newsletterRecipient->getZipCode() ?? '');

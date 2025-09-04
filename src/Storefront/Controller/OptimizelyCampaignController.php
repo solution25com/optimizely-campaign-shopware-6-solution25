@@ -6,16 +6,14 @@ use OptimizelyCampaign\Service\NewsletterService;
 use OptimizelyCampaign\Service\SubscriptionConfirmationException;
 use OptimizelyCampaign\Service\UnsubscriptionConfirmationException;
 use OptimizelyCampaign\Storefront\Page\OptimizelyCampaign\OptimizelyCampaignConfirmationPageLoader;
-use Shopware\Core\Framework\Routing\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
 
+#[Route(defaults: ['_routeScope' => ['storefront']])]
 /**
- * @Route(defaults={"_routeScope"={"storefront"}})
-*
  * @internal
  */
 class OptimizelyCampaignController extends StorefrontController
@@ -38,13 +36,9 @@ class OptimizelyCampaignController extends StorefrontController
         $this->newsletterService = $newsletterService;
     }
 
-    /**
-     * @Route("/optimizely", name="frontend.optimizely.index", options={"seo"="false"}, methods={"GET"})
-     */
+    #[Route(path: '/optimizely', name: 'frontend.optimizely.index', options: ['seo' => false], methods: ['GET'])]
     public function index(Request $request, SalesChannelContext $context): Response
     {
-
-
         $optInId = $request->get('hash', '');
         $shopId = $request->get('shop-id', '');
         $shop = $request->get('shop', '');
@@ -52,7 +46,7 @@ class OptimizelyCampaignController extends StorefrontController
         try {
             $this->newsletterService->confirmSubscription($optInId, $shopId, $shop, $context->getContext());
 
-            $this->addFlash('success', $this->trans("OptimizelyCampaign.recipientSuccessfulCreated"));
+            $this->addFlash('success', $this->trans('OptimizelyCampaign.recipientSuccessfulCreated'));
         } catch (SubscriptionConfirmationException $exception) {
             $this->addFlash('warning', $this->trans($exception->getMessage()));
         } catch (\Exception $exception) {
@@ -60,13 +54,11 @@ class OptimizelyCampaignController extends StorefrontController
         }
 
         return $this->renderStorefront('@OptimizelyCampaign/storefront/page/optimizely-campaign/index.html.twig', [
-            'page' => $this->optimizelyPageLoader->load($request, $context)
+            'page' => $this->optimizelyPageLoader->load($request, $context),
         ]);
     }
 
-    /**
-     * @Route("/optimizely/unsubscribe", name="frontend.optimizely.unsubscribe", options={"seo"="false"}, methods={"GET"})
-     */
+    #[Route(path: '/optimizely/unsubscribe', name: 'frontend.optimizely.unsubscribe', options: ['seo' => false], methods: ['GET'])]
     public function unsubscribe(Request $request, SalesChannelContext $context): Response
     {
         $optInId = $request->get('hash', '');
@@ -75,7 +67,7 @@ class OptimizelyCampaignController extends StorefrontController
         try {
             $this->newsletterService->unsubscribeByOptInId($optInId, $shopId, $context->getContext());
 
-            $this->addFlash('success', $this->trans("OptimizelyCampaign.recipientSuccessfulUnsubscribed"));
+            $this->addFlash('success', $this->trans('OptimizelyCampaign.recipientSuccessfulUnsubscribed'));
         } catch (UnsubscriptionConfirmationException $exception) {
             $this->addFlash('warning', $this->trans($exception->getMessage()));
         } catch (\Exception $exception) {
@@ -83,7 +75,7 @@ class OptimizelyCampaignController extends StorefrontController
         }
 
         return $this->renderStorefront('@OptimizelyCampaign/storefront/page/optimizely-campaign/index.html.twig', [
-            'page' => $this->optimizelyPageLoader->load($request, $context)
+            'page' => $this->optimizelyPageLoader->load($request, $context),
         ]);
     }
 }

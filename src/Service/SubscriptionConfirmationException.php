@@ -4,5 +4,4 @@ namespace OptimizelyCampaign\Service;
 
 class SubscriptionConfirmationException extends \Exception
 {
-
 }

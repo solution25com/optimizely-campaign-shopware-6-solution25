@@ -1,23 +1,23 @@
 {
-  "sw-sales-channel": {
-    "detail": {
-      "productComparison": {
-        "templates": {
-          "template-label": {
-            "optimizely": "Optimizely Campaign (CSV)"
-          }
+    "sw-sales-channel": {
+        "detail": {
+            "productComparison": {
+                "templates": {
+                    "template-label": {
+                        "optimizely": "Optimizely Campaign (CSV)"
+                    }
+                }
+            }
         }
-      }
+    },
+    "sw-mail-template": {
+        "detail": {
+            "options": {
+                "labelOptimizelyEnable": "Optimizely",
+                "labelOptimizelyAuthcode": "Optimizely authcode",
+                "labelOptimizelyBmMailId": "Optimizely bmMailingId",
+                "labelOptimizelyContent": "Optimizely"
+            }
+        }
     }
-  },
-  "sw-mail-template": {
-    "detail": {
-      "options": {
-        "labelOptimizelyEnable": "Optimizely",
-        "labelOptimizelyAuthcode": "Optimizely authcode",
-        "labelOptimizelyBmMailId": "Optimizely bmMailingId",
-        "labelOptimizelyContent": "Optimizely"
-      }
-    }
-  }
 }

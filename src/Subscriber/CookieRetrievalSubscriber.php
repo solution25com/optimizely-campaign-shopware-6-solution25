@@ -1,10 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace OptimizelyCampaign\Subscriber;
 
+use Shopware\Storefront\Event\StorefrontRenderEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Shopware\Storefront\Event\StorefrontRenderEvent;
 
 class CookieRetrievalSubscriber implements EventSubscriberInterface
 {
@@ -22,7 +22,7 @@ class CookieRetrievalSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function onPageLoad(StorefrontRenderEvent $event)
+    public function onPageLoad(StorefrontRenderEvent $event): void
     {
         $request = $this->requestStack->getCurrentRequest();
 
@@ -33,7 +33,6 @@ class CookieRetrievalSubscriber implements EventSubscriberInterface
             echo '<pre>' . print_r($trackingData, true) . '</pre>';
         } else {
             echo '<p>No tracking cookie found.</p>';
-
         }
     }
 }

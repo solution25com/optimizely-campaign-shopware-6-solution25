@@ -24,12 +24,13 @@ class OptimizelyAPI
      */
     private $client;
 
-    public function __construct(LoggerInterface $logger) {
+    public function __construct(LoggerInterface $logger)
+    {
         $this->logger = $logger;
 
         $this->client = new Client([
             'base_uri' => 'https://api.campaign.episerver.net/http/',
-            'timeout' => 10
+            'timeout' => 10,
         ]);
     }
 
@@ -41,18 +42,16 @@ class OptimizelyAPI
                 . '/' . $optimizelyRequest->getAuthCode()
                 . '/' . $optimizelyRequest->getMethod();
 
-
-
             $response = $this->client->send(new Request('POST', $url, [
                 'Accept' => '*/*',
                 'Content-Type' => 'application/x-www-form-urlencoded',
-                'Connection' => 'keep-alive'
+                'Connection' => 'keep-alive',
             ], http_build_query($optimizelyRequest->getData())));
 
             $responseContent = $response->getBody()->getContents();
 
-            if (strpos(strtolower($responseContent), 'ok') === false
-                && strpos(strtolower($responseContent), 'enqueued') === false) {
+            if (!str_contains(strtolower($responseContent), 'ok')
+                && !str_contains(strtolower($responseContent), 'enqueued')) {
                 $optimizelyRequest->saveRequestToErrorQueue($responseContent);
             } else {
                 $optimizelyRequest->removeFromErrorQueue();
@@ -60,7 +59,7 @@ class OptimizelyAPI
         } catch (ClientException|ConnectException|RequestException|ServerException $exception) {
             $response = $exception->getResponse();
             $errorStatus = 'unknown';
-            if (!is_null($response)) {
+            if ($response !== null) {
                 $errorStatus = $response->getBody()->getContents();
             }
 

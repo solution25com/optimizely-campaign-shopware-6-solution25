@@ -28,7 +28,7 @@ class Migration1616592650ErrorQueue extends MigrationStep
                     REFERENCES `sales_channel` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
             ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;';
 
-        $connection->executeUpdate($sql);
+        $connection->executeStatement($sql);
     }
 
     public function updateDestructive(Connection $connection): void

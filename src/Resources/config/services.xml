@@ -183,10 +183,10 @@
         <!--            <tag name="kernel.event_subscriber" />-->
         <!--        </service>-->
 
-        <!--        <service id="OptimizelyCampaign\Subscriber\PostClickTrackingSubscriber" >-->
-        <!--            <argument type="service" id="request_stack" />-->
-        <!--            <tag name="kernel.event_subscriber" />-->
-        <!--        </service>-->
+<!--                <service id="OptimizelyCampaign\Subscriber\PostClickTrackingSubscriber" >-->
+<!--                    <argument type="service" id="request_stack" />-->
+<!--                    <tag name="kernel.event_subscriber" />-->
+<!--                </service>-->
 
         <service id="GuzzleHttp\Client" class="GuzzleHttp\Client">
             <argument type="collection">

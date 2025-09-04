@@ -12,24 +12,6 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 abstract class AbstractOptimizelyRequest
 {
-    abstract public function getData(): array;
-    abstract public function getEndpoint(): string;
-    abstract public function getMethod(): string;
-
-    public function __construct(
-        EntityRepository $errorQueueRepository,
-        SalesChannelEntity $salesChannel,
-        Context $context,
-        SystemConfigService $systemConfigService,
-        ?ErrorQueueEntity $errorQueueEntity = null
-    ) {
-        $this->errorQueueRepository = $errorQueueRepository;
-        $this->salesChannel = $salesChannel;
-        $this->context = $context;
-        $this->systemConfigService = $systemConfigService;
-        $this->errorQueueEntity = $errorQueueEntity;
-    }
-
     /**
      * @var ErrorQueueEntity|null
      */
@@ -55,13 +37,33 @@ abstract class AbstractOptimizelyRequest
      */
     protected $systemConfigService;
 
+    public function __construct(
+        EntityRepository $errorQueueRepository,
+        SalesChannelEntity $salesChannel,
+        Context $context,
+        SystemConfigService $systemConfigService,
+        ?ErrorQueueEntity $errorQueueEntity = null
+    ) {
+        $this->errorQueueRepository = $errorQueueRepository;
+        $this->salesChannel = $salesChannel;
+        $this->context = $context;
+        $this->systemConfigService = $systemConfigService;
+        $this->errorQueueEntity = $errorQueueEntity;
+    }
+
+    abstract public function getData(): array;
+
+    abstract public function getEndpoint(): string;
+
+    abstract public function getMethod(): string;
+
     public function getAuthCode(): string
     {
         return $this->systemConfigService
-            ->get(OptimizelyCampaign::PLUGIN_CONFIG_OPTIVO_AUTH_CODE, $this->salesChannel->getId()) ?? "";
+            ->get(OptimizelyCampaign::PLUGIN_CONFIG_OPTIVO_AUTH_CODE, $this->salesChannel->getId()) ?? '';
     }
 
-    public function saveRequestToErrorQueue(string $response)
+    public function saveRequestToErrorQueue(string $response): void
     {
         if ($this->errorQueueEntity) {
             $this->errorQueueEntity->setLastRetryAt(new \DateTime('now'));
@@ -86,41 +88,32 @@ abstract class AbstractOptimizelyRequest
                 'lastRetryAt' => $this->errorQueueEntity->getLastRetryAt(),
                 'response' => $this->errorQueueEntity->getResponse(),
                 'salesChannel' => ['id' => $this->errorQueueEntity->getSalesChannelId()],
-                'options' => $this->errorQueueEntity->getOptions()
-            ]
+                'options' => $this->errorQueueEntity->getOptions(),
+            ],
         ], $this->context);
     }
 
-    public function removeFromErrorQueue()
+    public function removeFromErrorQueue(): void
     {
         if ($this->errorQueueEntity instanceof ErrorQueueEntity) {
             if ($this->errorQueueEntity->getCreatedAt()) {
                 $this->errorQueueRepository->delete([
-                    ['id' => $this->errorQueueEntity->getId()]
+                    ['id' => $this->errorQueueEntity->getId()],
                 ], $this->context);
             }
         }
     }
 
-    /**
-     * @return Context
-     */
     public function getContext(): Context
     {
         return $this->context;
     }
 
-    /**
-     * @return ErrorQueueEntity|null
-     */
     public function getErrorQueueEntity(): ?ErrorQueueEntity
     {
         return $this->errorQueueEntity;
     }
 
-    /**
-     * @param ErrorQueueEntity|null $errorQueueEntity
-     */
     public function setErrorQueueEntity(?ErrorQueueEntity $errorQueueEntity): void
     {
         $this->errorQueueEntity = $errorQueueEntity;
@@ -132,7 +125,7 @@ abstract class AbstractOptimizelyRequest
             'endpoint' => $this->getEndpoint(),
             'method' => $this->getMethod(),
             'data' => $this->getData(),
-            'sales_channel_id' => $this->salesChannel->getId()
+            'sales_channel_id' => $this->salesChannel->getId(),
         ];
     }
 }

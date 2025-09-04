@@ -22,7 +22,7 @@ class UpdateFieldsRequest extends AbstractOptimizelyRequest
             'customer-group' => $this->getCustomerGroup(),
             'vatid' => $this->getVatId(),
             'country' => $this->getCountryIso(),
-            'language' => $this->getLanguage()
+            'language' => $this->getLanguage(),
         ];
     }
 

@@ -48,9 +48,6 @@ class ApiCustomerDeletedEvent extends Event
             ->add('customer', new EntityType(CustomerDefinition::class));
     }
 
-    /**
-     * @return CustomerEntity
-     */
     public function getCustomer(): CustomerEntity
     {
         return $this->customer;

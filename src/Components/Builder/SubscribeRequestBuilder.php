@@ -75,7 +75,7 @@ class SubscribeRequestBuilder implements BuilderInterface
     {
         $salesChannel = $this->getSalesChannel($this->newsletterRecipient->getSalesChannelId(), $this->context);
         if (!($salesChannel instanceof SalesChannelEntity)) {
-            throw new \Exception("Unknown sales channel: ".$this->newsletterRecipient->getSalesChannelId());
+            throw new \Exception('Unknown sales channel: ' . $this->newsletterRecipient->getSalesChannelId());
         }
 
         $request = new SubscribeRequest(
@@ -86,7 +86,7 @@ class SubscribeRequestBuilder implements BuilderInterface
         );
 
         $request->setShopId($salesChannel->getId());
-        if ($salesChannel->getName() == null) {
+        if ($salesChannel->getName() === null) {
             $request->setShop($salesChannel->getTranslated()['name']);
         } else {
             $request->setShop($salesChannel->getName());
@@ -99,9 +99,9 @@ class SubscribeRequestBuilder implements BuilderInterface
         $request->setEmail($this->newsletterRecipient->getEmail());
         $request->setBmOptinSource('Shopware-Integration/' . $salesChannel->getName() . '/Version:6');
 
-        if ($this->newsletterRecipient->getSalutation()){
+        if ($this->newsletterRecipient->getSalutation()) {
             $request->setSalutation($this->newsletterRecipient->getSalutation()->getTranslation('displayName'));
-        }else{
+        } else {
             $request->setSalutation('');
         }
         $request->setFirstname($this->newsletterRecipient->getFirstName() ?? '');
@@ -109,13 +109,13 @@ class SubscribeRequestBuilder implements BuilderInterface
         $request->setStreet($this->newsletterRecipient->getStreet() ?? '');
         $request->setZip($this->newsletterRecipient->getZipCode() ?? '');
         $request->setCity($this->newsletterRecipient->getCity() ?? '');
-        $request->setPhoneNumber("");
-        $request->setCompany("");
-        $request->setDepartment("");
-        $request->setCustomerGroup("");
-        $request->setVatId("");
-        $request->setCountryIso("");
-        $request->setLanguage("");
+        $request->setPhoneNumber('');
+        $request->setCompany('');
+        $request->setDepartment('');
+        $request->setCustomerGroup('');
+        $request->setVatId('');
+        $request->setCountryIso('');
+        $request->setLanguage('');
 
         $customer = $this->findCustomerByEmail($this->newsletterRecipient->getEmail());
         if ($customer instanceof CustomerEntity) {
@@ -125,14 +125,14 @@ class SubscribeRequestBuilder implements BuilderInterface
                 }
             }
             if ($customer->getActiveBillingAddress()) {
-                if(true) {
+                if (true) {
                     // debug start
                     $request->setStreet($customer->getActiveBillingAddress()->getStreet() ?? '');
                     $request->setZip($customer->getActiveBillingAddress()->getZipCode() ?? '');
                     $request->setCity($customer->getActiveBillingAddress()->getCity() ?? '');
                     $request->setPhoneNumber($customer->getActiveBillingAddress()->getPhoneNumber() ?? '');
                     $request->setCountryIso($customer->getActiveBillingAddress()->getCountry()->getIso());
-                    // debug end
+                // debug end
                 } else {
                     $request->setStreet($customer->getActiveBillingAddress()->getStreet() ?? '');
                     $request->setZip($this->newsletterRecipient->getZipCode() ?? '');
@@ -147,10 +147,10 @@ class SubscribeRequestBuilder implements BuilderInterface
                 $request->setCustomerGroup($customer->getGroup()->getName() ?? '');
             }
             $vatIds = $customer->getVatIds() ?? [];
-            if (version_compare(PHP_VERSION, '7.4.0') >= 0) {
+            if (version_compare(\PHP_VERSION, '7.4.0') >= 0) {
                 $request->setVatId(implode(';', $vatIds));
             } else {
-                $request->setVatId(implode($vatIds, ';'));
+                $request->setVatId(implode(';', $vatIds));
             }
 
             $request->setDepartment($customer->getActiveBillingAddress()->getDepartment() ?? '');
@@ -166,7 +166,7 @@ class SubscribeRequestBuilder implements BuilderInterface
         return $this->salesChannelRepository->search($criteria, $context)->first();
     }
 
-    private function saveOptInId(string $optInId)
+    private function saveOptInId(string $optInId): void
     {
         $customFields = $this->newsletterRecipient->getCustomFields() ?? [];
         $customFields[OptimizelyCampaign::NEWSLETTER_RECIPIENT_OPTIVO_OPT_IN_ID] = $optInId;
@@ -174,8 +174,8 @@ class SubscribeRequestBuilder implements BuilderInterface
         $this->newsletterRecipientRepository->update([
             [
                 'id' => $this->newsletterRecipient->getId(),
-                'customFields' => $customFields
-            ]
+                'customFields' => $customFields,
+            ],
         ], $this->context);
     }
 

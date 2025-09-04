@@ -2,15 +2,16 @@
 
 namespace OptimizelyCampaign\Service;
 
+use Doctrine\DBAL\Connection;
 use OptimizelyCampaign\OptimizelyCampaign;
 use Shopware\Core\Content\MailTemplate\Aggregate\MailTemplateType\MailTemplateTypeEntity;
 use Shopware\Core\Content\MailTemplate\MailTemplateCollection;
 use Shopware\Core\Content\MailTemplate\MailTemplateEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Api\Util\AccessKeyHelper;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -18,11 +19,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Doctrine\DBAL\Connection;
 
 class SetupService
 {
-    const IS_OPTIMIZELY_CAMPAIGN_PRODUCT_EXPORT = 'isOptimizelyCampaignProductExport';
+    public const IS_OPTIMIZELY_CAMPAIGN_PRODUCT_EXPORT = 'isOptimizelyCampaignProductExport';
 
     /**
      * @var EntityRepository
@@ -98,14 +98,14 @@ class SetupService
         $this->context = $context;
     }
 
-    public function install()
+    public function install(): void
     {
         $productStream = [
             'id' => Uuid::randomHex(),
             'name' => 'Optimizely Product Stream',
             'customFields' => [
-                self::IS_OPTIMIZELY_CAMPAIGN_PRODUCT_EXPORT => true
-            ]
+                self::IS_OPTIMIZELY_CAMPAIGN_PRODUCT_EXPORT => true,
+            ],
         ];
 
         $this->productStreamRepository->create([$productStream], $this->context);
@@ -113,10 +113,10 @@ class SetupService
         $productStreamFilter = [
             'id' => Uuid::randomHex(),
             'type' => 'range',
-            'field' => 'price', "parameters" => [
-                "gte" => "0"
+            'field' => 'price', 'parameters' => [
+                'gte' => '0',
             ],
-            'productStreamId' => $productStream['id']
+            'productStreamId' => $productStream['id'],
         ];
 
         $this->productStreamFilterRepository->create([$productStreamFilter], $this->context);
@@ -129,11 +129,11 @@ class SetupService
                 continue;
             }
 
-            $fileName = 'optimizely_'.Uuid::randomHex().'.csv';
+            $fileName = 'optimizely_' . Uuid::randomHex() . '.csv';
 
             $optimizelySalesChannel = [
                 'id' => Uuid::randomHex(),
-                'name' => "Optimizely (".$salesChannel->getName().")",
+                'name' => 'Optimizely (' . $salesChannel->getName() . ')',
                 'typeId' => Defaults::SALES_CHANNEL_TYPE_PRODUCT_COMPARISON,
                 'accessKey' => AccessKeyHelper::generateAccessKey('sales-channel'),
 
@@ -153,24 +153,24 @@ class SetupService
 
                 // available mappings
                 'currencies' => [
-                    ['id' => $salesChannel->getCurrencyId()]
+                    ['id' => $salesChannel->getCurrencyId()],
                 ],
                 'languages' => [
-                    ['id' => $salesChannel->getLanguageId()]
+                    ['id' => $salesChannel->getLanguageId()],
                 ],
                 'shippingMethods' => [
-                    ['id' => $salesChannel->getShippingMethodId()]
+                    ['id' => $salesChannel->getShippingMethodId()],
                 ],
                 'paymentMethods' => [
-                    ['id' => $salesChannel->getPaymentMethodId()]
+                    ['id' => $salesChannel->getPaymentMethodId()],
                 ],
                 'countries' => [
-                    ['id' => $salesChannel->getCountryId()]
+                    ['id' => $salesChannel->getCountryId()],
                 ],
 
                 'customFields' => [
-                    self::IS_OPTIMIZELY_CAMPAIGN_PRODUCT_EXPORT => true
-                ]
+                    self::IS_OPTIMIZELY_CAMPAIGN_PRODUCT_EXPORT => true,
+                ],
             ];
 
             $this->salesChannelRepository->create([$optimizelySalesChannel], $this->context);
@@ -192,22 +192,21 @@ class SetupService
                 'headerTemplate' => $this->headerTemplate(),
                 'bodyTemplate' => $this->bodyTemplate(),
                 'customFields' => [
-                    self::IS_OPTIMIZELY_CAMPAIGN_PRODUCT_EXPORT => true
-                ]
+                    self::IS_OPTIMIZELY_CAMPAIGN_PRODUCT_EXPORT => true,
+                ],
             ];
 
             $this->productExportRepository->create([$productExport], $this->context);
 
-            $i++;
+            ++$i;
         }
-
 
         // install email templates
         $this->addOptimizelyEmailTemplate('customer_register', $this->getCustomerRegisterConfirmationTemplate());
         $this->addOptimizelyEmailTemplate('order_confirmation_mail', $this->getOrderRegisterConfirmationTemplate());
     }
 
-    public function uninstall()
+    public function uninstall(): void
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('configurationKey', [
@@ -216,10 +215,10 @@ class SetupService
             OptimizelyCampaign::PLUGIN_CONFIG_OPTIVO_AUTH_CODE,
             OptimizelyCampaign::PLUGIN_CONFIG_RUN_EXPORT,
             OptimizelyCampaign::PLUGIN_CONFIG_EXPORT_NAME,
-            //OptimizelyCampaign::PLUGIN_CONFIG_EXPORT_LINK,
+            // OptimizelyCampaign::PLUGIN_CONFIG_EXPORT_LINK,
             OptimizelyCampaign::PLUGIN_CONFIG_SFTP_USERNAME,
             OptimizelyCampaign::PLUGIN_CONFIG_SFTP_PASSWORD,
-            OptimizelyCampaign::PLUGIN_CONFIG_SFTP_PRIVATE_KEY
+            OptimizelyCampaign::PLUGIN_CONFIG_SFTP_PRIVATE_KEY,
         ]));
 
         $itemsToDelete = [];
@@ -227,7 +226,7 @@ class SetupService
             $itemsToDelete[] = ['id' => $id];
         }
 
-        if (count($itemsToDelete) > 0) {
+        if (\count($itemsToDelete) > 0) {
             $this->systemConfigRepository->delete($itemsToDelete, $this->context);
         }
 
@@ -240,32 +239,21 @@ class SetupService
                 continue;
             }
 
-            $delete = (bool) $salesChannel->getCustomFields()[self::IS_OPTIMIZELY_CAMPAIGN_PRODUCT_EXPORT] ?? false;
+            $delete = (bool) ($salesChannel->getCustomFields()[self::IS_OPTIMIZELY_CAMPAIGN_PRODUCT_EXPORT] ?? false);
             if ($delete) {
                 $itemsToDelete[] = [
-                    'id' => $salesChannel->getId()
+                    'id' => $salesChannel->getId(),
                 ];
             }
-
         }
 
-        if (count($itemsToDelete) > 0) {
+        if (\count($itemsToDelete) > 0) {
             $this->salesChannelRepository->delete($itemsToDelete, $this->context);
         }
 
-        $this->dbConnection->executeUpdate('DROP TABLE IF EXISTS `optimizely_campaign_error_queue`');
+        $this->dbConnection->executeStatement('DROP TABLE IF EXISTS `optimizely_campaign_error_queue`');
 
         $this->cleanTemplateMails();
-    }
-
-    private function getStorefrontSalesChannels(): EntityCollection
-    {
-        $criteria = new Criteria();
-        $criteria->addAssociation('domains');
-        $criteria->addFilter(new EqualsFilter('typeId', Defaults::SALES_CHANNEL_TYPE_STOREFRONT));
-        $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::ASCENDING));
-
-        return $this->salesChannelRepository->search($criteria, $this->context)->getEntities();
     }
 
     protected function getSnippetSetId(): string
@@ -289,6 +277,16 @@ class SetupService
         }
 
         return $id;
+    }
+
+    private function getStorefrontSalesChannels(): EntityCollection
+    {
+        $criteria = new Criteria();
+        $criteria->addAssociation('domains');
+        $criteria->addFilter(new EqualsFilter('typeId', Defaults::SALES_CHANNEL_TYPE_STOREFRONT));
+        $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::ASCENDING));
+
+        return $this->salesChannelRepository->search($criteria, $this->context)->getEntities();
     }
 
     private function headerTemplate(): string
@@ -369,7 +367,7 @@ amount={{ order.amountTotal }};
 ';
     }
 
-    private function addOptimizelyEmailTemplate(string $templateTechnicalName, string $templateContent)
+    private function addOptimizelyEmailTemplate(string $templateTechnicalName, string $templateContent): void
     {
         $templateType = $this->getTemplateTypeByTechnicalName($templateTechnicalName);
         if ($templateType instanceof MailTemplateTypeEntity) {
@@ -382,10 +380,10 @@ amount={{ order.amountTotal }};
 
                 $updates[] = [
                     'id' => $mailTemplate->getId(),
-                    'customFields' => $customFields
+                    'customFields' => $customFields,
                 ];
             }
-            if (count($updates) > 0) {
+            if (\count($updates) > 0) {
                 $this->mailTemplateRepository->update($updates, $this->context);
             }
         }
@@ -407,7 +405,7 @@ amount={{ order.amountTotal }};
         return $this->mailTemplateRepository->search($criteria, $this->context)->getEntities();
     }
 
-    private function cleanTemplateMails()
+    private function cleanTemplateMails(): void
     {
         $criteria = new Criteria();
         $criteria->addFilter(new NotFilter(NotFilter::CONNECTION_AND, [new EqualsFilter('customFields.optimizelyContent', null)]));
@@ -424,18 +422,18 @@ amount={{ order.amountTotal }};
                     $update = true;
                 }
             }
-            if (count($customFields) == 0) {
+            if (\count($customFields) === 0) {
                 $customFields = null;
             }
             if ($update) {
                 $updates[] = [
                     'id' => $entity->getId(),
-                    'customFields' => $customFields
+                    'customFields' => $customFields,
                 ];
             }
         }
 
-        if (count($updates) > 0) {
+        if (\count($updates) > 0) {
             $this->mailTemplateRepository->update($updates, $this->context);
         }
     }

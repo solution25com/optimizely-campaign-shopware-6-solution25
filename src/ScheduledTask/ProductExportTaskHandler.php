@@ -31,7 +31,7 @@ class ProductExportTaskHandler extends ScheduledTaskHandler
 
     public static function getHandledMessages(): iterable
     {
-        return [ ProductExportTask::class ];
+        return [ProductExportTask::class];
     }
 
     public function run(): void
@@ -39,7 +39,7 @@ class ProductExportTaskHandler extends ScheduledTaskHandler
         try {
             $this->productExportService->run();
         } catch (\Exception $exception) {
-            $this->logger->error($exception->getMessage()." ".$exception->getTraceAsString());
+            $this->logger->error($exception->getMessage() . ' ' . $exception->getTraceAsString());
         }
     }
 }

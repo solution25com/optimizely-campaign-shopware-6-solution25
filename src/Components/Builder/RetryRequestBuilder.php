@@ -17,14 +17,17 @@ class RetryRequestBuilder implements BuilderInterface
      * @var ErrorQueueEntity
      */
     private $errorQueueEntry;
+
     /**
      * @var Context
      */
     private $context;
+
     /**
      * @var SystemConfigService
      */
     private $systemConfigService;
+
     /**
      * @var EntityRepository
      */
@@ -51,19 +54,19 @@ class RetryRequestBuilder implements BuilderInterface
     public function build(): AbstractOptimizelyRequest
     {
         $salesChannel = $this->errorQueueEntry->getSalesChannel();
-        if (is_null($salesChannel)) {
+        if ($salesChannel === null) {
             if (empty($this->errorQueueEntry->getSalesChannelId())) {
-                throw new \Exception("Can not build retry request. Sales channel not set");
+                throw new \Exception('Can not build retry request. Sales channel not set');
             }
             $salesChannel = $this->getSalesChannel($this->errorQueueEntry->getSalesChannelId());
         }
 
         return new RetryRequest(
-             $this->errorQueueRepository,
-             $salesChannel,
-             $this->context,
-             $this->systemConfigService,
-             $this->errorQueueEntry
+            $this->errorQueueRepository,
+            $salesChannel,
+            $this->context,
+            $this->systemConfigService,
+            $this->errorQueueEntry
         );
     }
 

@@ -6,7 +6,7 @@ class RetryRequest extends AbstractOptimizelyRequest
 {
     public function getData(): array
     {
-        if (!is_null($this->errorQueueEntity)) {
+        if ($this->errorQueueEntity !== null) {
             return $this->errorQueueEntity->getData();
         }
 
@@ -15,7 +15,7 @@ class RetryRequest extends AbstractOptimizelyRequest
 
     public function getEndpoint(): string
     {
-        if (!is_null($this->errorQueueEntity)) {
+        if ($this->errorQueueEntity !== null) {
             return $this->errorQueueEntity->getEndpoint();
         }
 
@@ -24,7 +24,7 @@ class RetryRequest extends AbstractOptimizelyRequest
 
     public function getMethod(): string
     {
-        if (!is_null($this->errorQueueEntity)) {
+        if ($this->errorQueueEntity !== null) {
             return $this->errorQueueEntity->getMethod();
         }
 

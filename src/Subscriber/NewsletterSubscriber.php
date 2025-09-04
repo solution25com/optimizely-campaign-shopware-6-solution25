@@ -2,13 +2,13 @@
 
 namespace OptimizelyCampaign\Subscriber;
 
-use OptimizelyCampaign\Event\NewsletterUnsubscribeEvent;
 use OptimizelyCampaign\Service\NewsletterService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientDefinition;
 use Shopware\Core\Content\Newsletter\Aggregate\NewsletterRecipient\NewsletterRecipientEntity;
 use Shopware\Core\Content\Newsletter\Event\NewsletterConfirmEvent;
 use Shopware\Core\Content\Newsletter\Event\NewsletterRegisterEvent;
+use Shopware\Core\Content\Newsletter\Event\NewsletterUnsubscribeEvent;
 use Shopware\Core\Content\Newsletter\NewsletterEvents;
 use Shopware\Core\Content\Newsletter\SalesChannel\NewsletterSubscribeRoute;
 use Shopware\Core\Framework\Context;
@@ -27,7 +27,9 @@ class NewsletterSubscriber implements EventSubscriberInterface
      * @var LoggerInterface
      */
     private $logger;
+
     private $oldEmail;
+
     /**
      * @var SystemConfigService
      */
@@ -44,12 +46,11 @@ class NewsletterSubscriber implements EventSubscriberInterface
     private $newsletterService;
 
     public function __construct(
-        LoggerInterface     $logger,
+        LoggerInterface $logger,
         SystemConfigService $systemConfigService,
-        EntityRepository    $newsletterRecipientRepository,
-        NewsletterService   $newsletterService
-    )
-    {
+        EntityRepository $newsletterRecipientRepository,
+        NewsletterService $newsletterService
+    ) {
         $this->logger = $logger;
         $this->systemConfigService = $systemConfigService;
         $this->newsletterRecipientRepository = $newsletterRecipientRepository;
@@ -68,62 +69,46 @@ class NewsletterSubscriber implements EventSubscriberInterface
         ];
     }
 
-
-    /**
-     * @param PreWriteValidationEvent $event
-     * @return void
-     */
     public function triggerChangeSet(PreWriteValidationEvent $event): void
     {
-
-        if ($event->getContext()->getScope() === "crud" || $event->getContext()->getScope() === "user") {
-
-
+        if ($event->getContext()->getScope() === 'crud' || $event->getContext()->getScope() === 'user') {
             foreach ($event->getCommands() as $command) {
-
-                if ($command->getEntityExistence()->getEntityName() !== "newsletter_recipient") {
+                if ($command->getEntityExistence()->getEntityName() !== 'newsletter_recipient') {
                     return;
                 }
 
-                if (array_key_exists('email', $command->getPayload())) {
-                    if (array_key_exists('id', $command->getEntityExistence()->getPrimaryKey())
-                        && !is_null($command->getEntityExistence()->getPrimaryKey()['id'])) {
+                if (\array_key_exists('email', $command->getPayload())) {
+                    if (\array_key_exists('id', $command->getEntityExistence()->getPrimaryKey())
+                        && $command->getEntityExistence()->getPrimaryKey()['id'] !== null) {
                         $getOldEmailFromRepo = $this->getOldEmailRepo($command->getEntityExistence()->getPrimaryKey()['id'], $event);
 
-                        if ($getOldEmailFromRepo == "null") {
+                        if ($getOldEmailFromRepo === 'null') {
                             return;
                         }
                         $this->oldEmail = $getOldEmailFromRepo;
-
-
                     }
                 } else {
                     return;
                 }
-
             }
         }
     }
 
-    /**
-     * @param string $newsletterId
-     * @return string|null
-     */
     public function getOldEmailRepo(string $newsletterId, $event): ?string
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('id', $newsletterId));
         $newsletterData = $this->newsletterRecipientRepository->search($criteria, $event->getContext())->get($newsletterId);
 
-        if ($newsletterData == null) {
-            return "null";
+        if ($newsletterData === null) {
+            return 'null';
         }
+
         return $newsletterData->getEmail();
     }
 
-    public function onNewsletterRegisterEvent(NewsletterRegisterEvent $event)
+    public function onNewsletterRegisterEvent(NewsletterRegisterEvent $event): void
     {
-
         if ($this->isPluginActive($event->getSalesChannelId())) {
             try {
                 $newsletterRecipient = $this->getNewsletterRecipient(
@@ -137,12 +122,12 @@ class NewsletterSubscriber implements EventSubscriberInterface
                 );
                 $event->stopPropagation();
             } catch (\Exception $exception) {
-                $this->logger->error($exception->getMessage() . " " . $exception->getTraceAsString());
+                $this->logger->error($exception->getMessage() . ' ' . $exception->getTraceAsString());
             }
         }
     }
 
-    public function onNewsletterConfirmEvent(NewsletterConfirmEvent $event)
+    public function onNewsletterConfirmEvent(NewsletterConfirmEvent $event): void
     {
         if ($this->isPluginActive($event->getSalesChannelId())) {
             try {
@@ -164,12 +149,12 @@ class NewsletterSubscriber implements EventSubscriberInterface
                     $event->stopPropagation();
                 }
             } catch (\Exception $exception) {
-                $this->logger->error($exception->getMessage() . " " . $exception->getTraceAsString());
+                $this->logger->error($exception->getMessage() . ' ' . $exception->getTraceAsString());
             }
         }
     }
 
-    public function onNewsletterUnsubscribe(NewsletterUnsubscribeEvent $event)
+    public function onNewsletterUnsubscribe(NewsletterUnsubscribeEvent $event): void
     {
         try {
             $this->newsletterService->sendUnsubscribeRequest(
@@ -178,23 +163,21 @@ class NewsletterSubscriber implements EventSubscriberInterface
                 $event->getContext()
             );
         } catch (\Exception $exception) {
-            $this->logger->error($exception->getMessage() . " " . $exception->getTraceAsString());
+            $this->logger->error($exception->getMessage() . ' ' . $exception->getTraceAsString());
         }
 
         try {
             $this->newsletterService->editNewsletterRecipient([
                 'id' => $event->getNewsletterRecipient()->getId(),
-                'confirmedAt' => null
+                'confirmedAt' => null,
             ], $event->getContext());
         } catch (\Exception $exception) {
-            $this->logger->error($exception->getMessage() . " " . $exception->getTraceAsString());
+            $this->logger->error($exception->getMessage() . ' ' . $exception->getTraceAsString());
         }
     }
 
-    public function onNewsletterRecipientWritten(EntityWrittenEvent $entityWrittenEvent)
+    public function onNewsletterRecipientWritten(EntityWrittenEvent $entityWrittenEvent): void
     {
-
-
         if ($entityWrittenEvent->getEntityName() !== NewsletterRecipientDefinition::ENTITY_NAME) {
             return;
         }
@@ -213,18 +196,15 @@ class NewsletterSubscriber implements EventSubscriberInterface
                         // Check if is Customer if customer Exists don't change Email,
                         // need to use Customers section to edit the email!
                         if ($this->oldEmail !== null && $this->oldEmail !== $newsletterRecipient->getEmail()) {
-
                             try {
-
                                 $this->newsletterService->replaceNewsletterRecipientEmailSubscriber(
                                     $this->oldEmail,
                                     $newsletterRecipient->getEmail(),
                                     $entityWrittenEvent->getContext()
                                 );
                             } catch (\Exception $exception) {
-                                $this->logger->error($exception->getMessage() . " " . $exception->getTraceAsString());
+                                $this->logger->error($exception->getMessage() . ' ' . $exception->getTraceAsString());
                             }
-
                         }
 
                         if ($this->isPluginActive($newsletterRecipient->getSalesChannelId())) {
@@ -247,7 +227,7 @@ class NewsletterSubscriber implements EventSubscriberInterface
                 // recipient unsubscribed from list
                 $newsletterRecipientId = $writeResult->getPayload()['id'] ?? '';
                 if (empty($newsletterRecipientId)) {
-                    $this->logger->error("Couldn't unsubscribe. Id missing in payload");
+                    $this->logger->error('Couldn\'t unsubscribe. Id missing in payload');
                     continue;
                 }
 
@@ -266,22 +246,20 @@ class NewsletterSubscriber implements EventSubscriberInterface
                 try {
                     $this->newsletterService->editNewsletterRecipient([
                         'id' => $newsletterRecipient->getId(),
-                        'confirmedAt' => null
+                        'confirmedAt' => null,
                     ], $entityWrittenEvent->getContext());
                 } catch (\Exception $exception) {
-                    $this->logger->error($exception->getMessage() . " " . $exception->getTraceAsString());
+                    $this->logger->error($exception->getMessage() . ' ' . $exception->getTraceAsString());
                 }
             } catch (\Exception $exception) {
-                $this->logger->error($exception->getMessage() . " " . $exception->getTraceAsString());
+                $this->logger->error($exception->getMessage() . ' ' . $exception->getTraceAsString());
             }
         }
-
     }
 
     protected function isPluginActive(string $salesChannelId): bool
     {
-        return (bool)($this->systemConfigService->get('OptimizelyCampaign.config.active', $salesChannelId) ?? false);
-
+        return (bool) ($this->systemConfigService->get('OptimizelyCampaign.config.active', $salesChannelId) ?? false);
     }
 
     protected function getNewsletterRecipient(string $newsletterRecipientId, Context $context): ?NewsletterRecipientEntity

@@ -1,44 +1,46 @@
 {% block sw_mail_template_options_form_sender_name_field %}
-    {% parent %}
+    {% parent() %}
 
-    <sw-field
-            v-if="mailTemplate.customFields"
-            v-model="mailTemplate.customFields.optimizelyEnabled"
-            type="checkbox"
-            :label="$tc('sw-mail-template.detail.options.labelOptimizelyEnable')"
-            :disabled="!acl.can('mail_templates.editor')">
-    </sw-field>
+    <sw-checkbox-field
+        v-if="mailTemplate.customFields"
+        v-model:value="mailTemplate.customFields.optimizelyEnabled"
+        type="checkbox"
+        :label="$tc('sw-mail-template.detail.options.labelOptimizelyEnable')"
+        :disabled="!acl.can('mail_templates.editor')"
+    >
+    </sw-checkbox-field>
 
-    <sw-field
-            v-if="mailTemplate.customFields"
-            v-model="mailTemplate.customFields.optimizelyAuthcode"
-            type="text"
-            :label="$tc('sw-mail-template.detail.options.labelOptimizelyAuthcode')"
-            :disabled="!acl.can('mail_templates.editor') || !mailTemplate.customFields.optimizelyEnabled">
-    </sw-field>
+    <sw-text-field
+        v-if="mailTemplate.customFields"
+        v-model:value="mailTemplate.customFields.optimizelyAuthcode"
+        type="text"
+        :label="$tc('sw-mail-template.detail.options.labelOptimizelyAuthcode')"
+        :disabled="!acl.can('mail_templates.editor') || !mailTemplate.customFields.optimizelyEnabled"
+    >
+    </sw-text-field>
 
-    <sw-field
-            v-if="mailTemplate.customFields"
-            v-model="mailTemplate.customFields.optimizelyBmMailId"
-            type="text"
-            :label="$tc('sw-mail-template.detail.options.labelOptimizelyBmMailId')"
-            :disabled="!acl.can('mail_templates.editor') || !mailTemplate.customFields.optimizelyEnabled">
-    </sw-field>
-
+    <sw-text-field
+        v-if="mailTemplate.customFields"
+        v-model:value="mailTemplate.customFields.optimizelyBmMailId"
+        type="text"
+        :label="$tc('sw-mail-template.detail.options.labelOptimizelyBmMailId')"
+        :disabled="!acl.can('mail_templates.editor') || !mailTemplate.customFields.optimizelyEnabled"
+    >
+    </sw-text-field>
 {% endblock %}
-
 {% block sw_mail_template_mail_text_form_content_html_field %}
-    {% parent %}
+    {% parent() %}
 
     <sw-code-editor
-            v-if="mailTemplate.customFields"
-            v-model="mailTemplate.customFields.optimizelyContent"
-            :label="$tc('sw-mail-template.detail.options.labelOptimizelyContent')"
-            :disabled="!acl.can('mail_templates.editor')"
-            :completerFunction="null"
-            completionMode="text"
-            mode="twig"
-            :softWraps="true"
-            :setFocus="false">
+        v-if="mailTemplate.customFields"
+        v-model:value="mailTemplate.customFields.optimizelyContent"
+        :label="$tc('sw-mail-template.detail.options.labelOptimizelyContent')"
+        :disabled="!acl.can('mail_templates.editor')"
+        :completerFunction="null"
+        completionMode="text"
+        mode="twig"
+        :softWraps="true"
+        :setFocus="false"
+    >
     </sw-code-editor>
 {% endblock %}

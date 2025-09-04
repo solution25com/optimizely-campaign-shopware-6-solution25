@@ -2,8 +2,8 @@
 
 namespace OptimizelyCampaign\Subscriber;
 
-use OptimizelyCampaign\Components\OptimizelyAPI;
 use OptimizelyCampaign\Components\Builder\TransactionEmailRequestBuilder;
+use OptimizelyCampaign\Components\OptimizelyAPI;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\MailTemplate\Service\Event\MailBeforeValidateEvent;
 use Shopware\Core\Framework\Adapter\Twig\StringTemplateRenderer;
@@ -62,11 +62,11 @@ class MailBeforeSentSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            MailBeforeValidateEvent::class => 'onMailBeforeSent'
+            MailBeforeValidateEvent::class => 'onMailBeforeSent',
         ];
     }
 
-    public function onMailBeforeSent(MailBeforeValidateEvent $event)
+    public function onMailBeforeSent(MailBeforeValidateEvent $event): void
     {
         try {
             $data = $event->getData();
@@ -93,7 +93,7 @@ class MailBeforeSentSubscriber implements EventSubscriberInterface
                 }
             }
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage() . " " . $e->getTraceAsString());
+            $this->logger->error($e->getMessage() . ' ' . $e->getTraceAsString());
         }
     }
 

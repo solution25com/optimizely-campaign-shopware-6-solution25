@@ -32,7 +32,7 @@ class ApiRequestRetryTaskHandler extends ScheduledTaskHandler
 
     public static function getHandledMessages(): iterable
     {
-        return [ ApiRequestRetryTask::class ];
+        return [ApiRequestRetryTask::class];
     }
 
     public function run(): void
@@ -40,7 +40,7 @@ class ApiRequestRetryTaskHandler extends ScheduledTaskHandler
         try {
             $this->requestRetryService->retry();
         } catch (\Exception $exception) {
-            $this->logger->error($exception->getMessage().' '.$exception->getTraceAsString());
+            $this->logger->error($exception->getMessage() . ' ' . $exception->getTraceAsString());
         }
     }
 }

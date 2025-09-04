@@ -1,18 +1,19 @@
 {
-    "name": "optimizely/campaign",
+    "name": "solution25/optimizely-campaign",
     "description": "Optimizely Campaign",
-    "version": "v1.0.11",
+    "version": "v1.0.14",
     "type": "shopware-platform-plugin",
     "authors": [
         {
-            "name": "Optimizely Inc",
-            "homepage": "https://www.optimizely.com/"
+            "name": "Solution25",
+            "email": "info@solution25.com",
+            "homepage": "https://solution25.com/"
         }
     ],
     "require": {
         "phpseclib/phpseclib": "^2.0|^3.0",
-        "shopware/core": ">=6.3.5 <6.5",
-        "shopware/storefront": ">=6.3.5 <6.5"
+        "shopware/core": "^6.5",
+        "shopware/storefront": "^6.5"
     },
     "minimum-stability": "RC",
     "license": "proprietary",
@@ -24,7 +25,6 @@
     "extra": {
         "shopware-plugin-class": "OptimizelyCampaign\\OptimizelyCampaign",
         "plugin-icon": "src/Resources/config/plugin.png",
-        "copyright": "(c) by Optimizely Inc",
         "label": {
             "de-DE": "Optimizely Campaign",
             "en-GB": "Optimizely Campaign"

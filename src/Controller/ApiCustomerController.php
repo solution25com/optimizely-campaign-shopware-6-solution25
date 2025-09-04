@@ -9,24 +9,21 @@ use Shopware\Core\Framework\Api\Response\ResponseFactoryInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityProtection\EntityProtectionValidator;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\CompositeEntitySearcher;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Encoder\DecoderInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
+#[Route(defaults: ['_routeScope' => ['api']])]
 /**
- * @Route(defaults={"_routeScope"={"api"}})
-*
  * @internal
  */
 class ApiCustomerController extends ApiController
 {
-    const ENTITY_NAME = 'customer';
+    public const ENTITY_NAME = 'customer';
 
     /**
      * @var DefinitionInstanceRegistry
@@ -40,12 +37,13 @@ class ApiCustomerController extends ApiController
 
     public function __construct(
         DefinitionInstanceRegistry $definitionRegistry,
-        Serializer $serializer,
+        DecoderInterface $serializer,
         RequestCriteriaBuilder $searchCriteriaBuilder,
         EntityProtectionValidator $entityProtectionValidator,
         AclCriteriaValidator $criteriaValidator
     ) {
-        parent::__construct($definitionRegistry,
+        parent::__construct(
+            $definitionRegistry,
             $serializer,
             $searchCriteriaBuilder,
             $entityProtectionValidator,
@@ -54,25 +52,16 @@ class ApiCustomerController extends ApiController
         $this->definitionRegistry = $definitionRegistry;
     }
 
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
     {
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    /**
-     * @Route(
-     *     "/api/v{version}/customer/{path}",
-     *     name="api.override.customer.delete",
-     *     methods={"DELETE"}
-     * )
-     * @param Request $request
-     * @param Context $context
-     *
-     * @param ResponseFactoryInterface $responseFactory
-     * @param string $path
-     *
-     * @return Response
-     */
+    #[Route(
+        path: '/api/v{version}/customer/{path}',
+        name: 'api.override.customer.delete',
+        methods: ['DELETE']
+    )]
     public function deleteCustomer(
         Request $request,
         Context $context,
@@ -83,7 +72,7 @@ class ApiCustomerController extends ApiController
         $entity = $repository->search(new Criteria([$path]), $context)->first();
         $response = $this->delete($request, $context, $responseFactory, self::ENTITY_NAME, $path);
 
-        if ($response->getStatusCode() == Response::HTTP_NO_CONTENT && $entity) {
+        if ($response->getStatusCode() === Response::HTTP_NO_CONTENT && $entity) {
             $this->eventDispatcher->dispatch(new ApiCustomerDeletedEvent($context, $entity));
         }
 

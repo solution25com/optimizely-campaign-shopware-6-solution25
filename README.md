@@ -1,41 +1,88 @@
-# Optimizely Campaign - Shopware 6 Plugin - Coming Soon
+#  Optimizely Campaign – Shopware 6 Plugin by Solution25
 
-## ✨ Coming Soon - Shopware 6 Plugin
-Empower your email marketing with Optimizely Campaign. Sync customer data, automate product catalog exports, track post-click actions, and send transactional emails.   
+Boost your email marketing automation in Shopware 6. Sync customer data, automate product catalog exports, track customer behavior, and send transactional emails with ease.
 
-## 🚀 Why Choose Optimizely Campaign?  
-- **Seamless Transactional Emails** – Send order confirmations, account updates, and more.  
-- **Automated Subscriber Sync** – Keep your newsletter lists always up to date.  
-- **Product Catalog Export** – Ensure promotional emails always feature the latest products.  
-- **Customer Behavior Tracking** – Capture views, cart actions, and purchases to build targeted campaigns.  
-- **Easy Configuration** – Fully managed within Shopware’s admin panel.  
+---
 
-## 📌 Features  
-- **Transactional Email Integration** – Automate crucial customer communications.  
-- **Subscriber List Synchronization** – Always have accurate subscriber data.  
-- **Product Catalog Export Automation** – Ensure your promotions stay current.  
-- **Real-Time Customer Tracking** – Use behavioral insights for better targeting.  
-- **User-Friendly Setup** – No technical expertise required.  
-- **Fully Compatible with Shopware 6** – Optimized for a smooth experience.  
+##  Key Benefits
 
-## 🎉 Stay Updated
-Follow us for updates and more information:
-- [Website](https://www.solution25.com)
-- [GitHub Repository](https://github.com/orgs/solution25com/dashboard)
-- **Support & Contact:**  
-  - **Email:** [info@solution25.com](mailto:info@solution25.com)  
-  - **Phone:** +49 421 438 1919-0  
+- **Seamless Transactional Emails** – Automate order confirmations, account notifications, and more.
+- **Automated Subscriber Sync** – Keep your newsletter and contact lists always current.
+- **Product Catalog Export** – Ensure your email campaigns feature up-to-date product data.
+- **Customer Behavior Tracking** – Capture page views, cart events, and purchases to optimize targeting.
+- **Simple Integration** – Configure everything from within the Shopware admin panel.
+- **Fully Compatible with Shopware 6** – Built for a seamless experience.
 
-## 🛠 Installation (Available after release on May 1, 2025)
-Once the plugin is released, you can install it using the following command:
+---
 
+##  Get Started
+
+### Installation & Activation :
+
+## GitHub
+
+1. Clone the plugin into your Shopware plugins directory:
 ```bash
-bin/console plugin:install --activate PluginName
+git clone https://https://github.com/solution25com/optimizely-campaign-shopware-6-solution25
 ```
-Step-by-step setup instructions will be available upon release.
 
-## 🚀 Developers & Contributions
-If you want to contribute to the development, feel free to fork the repository and submit pull requests.
 
-Thank you for your interest! 🙌
+2. **Install the Plugin in Shopware 6**
+
+- Log in to your Shopware 6 Administration panel.
+- Navigate to Extensions > My Extensions.
+- Locate the newly cloned plugin and click Install.
+
+3. **Activate the Plugin**
+
+- After installation, click Activate to enable the plugin.
+- In your Shopware Admin, go to Settings > System > Plugins.
+- Upload or install the “Email Marketing ” plugin.
+- Once installed, toggle the plugin to activate it.
+
+4. **Verify Installation**
+
+- After activation, you will see Email Marketing in the list of installed plugins.
+- The plugin name, version, and installation date should appear.
+
+## Plugin Configuration
+
+After installing the plugin, you can configure your **Email Marketing** credentials and options through the Shopware Administration panel.
+
+### Accessing the Configuration
+
+1. Go to **Settings > Extensions > Email Marketing**
+2. Select the **Sales Channel** you want to configure
+3. Set the following fields:
+
+
+**General Settings**
+
+- Opt-in Id.
+- Authorization Code.
+
+
+**Product Export Settings**
+
+- Export Name.
+- SFTP Username.
+- SFTP keyfile password.
+- SFTP PRIVATE key file
+
+
+**Event Configuration**
+
+- PostClick Base URL.
+- Authorization PostClick Code .
+- Client PostClick Code .
+- Add to basket param
+- Purchase Param
+- Product Param
+
+
+
+
+## 📞 Support & Contact
+
+- **Email:** info@solution25.com  
 

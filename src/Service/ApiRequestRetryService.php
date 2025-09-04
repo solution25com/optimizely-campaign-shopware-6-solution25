@@ -2,8 +2,8 @@
 
 namespace OptimizelyCampaign\Service;
 
-use OptimizelyCampaign\Components\OptimizelyAPI;
 use OptimizelyCampaign\Components\Builder\RetryRequestBuilder;
+use OptimizelyCampaign\Components\OptimizelyAPI;
 use OptimizelyCampaign\Entity\ErrorQueue\ErrorQueueEntityCollection;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
@@ -14,7 +14,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class ApiRequestRetryService
 {
-    const MAX_RETRY_COUNT = 5;
+    public const MAX_RETRY_COUNT = 5;
 
     /**
      * @var LoggerInterface
@@ -61,7 +61,7 @@ class ApiRequestRetryService
         $this->logger = $logger;
     }
 
-    public function retry()
+    public function retry(): void
     {
         foreach ($this->findRetryableEntries() as $errorQueueEntry) {
             try {
@@ -70,10 +70,11 @@ class ApiRequestRetryService
                         $errorQueueEntry,
                         $this->systemConfigService,
                         $this->salesChannelRepository,
-                        $this->errorQueueRepository))->build()
+                        $this->errorQueueRepository
+                    ))->build()
                 );
             } catch (\Exception $exception) {
-                $this->logger->error($exception->getMessage().' '.$exception->getTraceAsString());
+                $this->logger->error($exception->getMessage() . ' ' . $exception->getTraceAsString());
             }
         }
     }
@@ -82,7 +83,7 @@ class ApiRequestRetryService
     {
         $criteria = new Criteria();
         $criteria->addFilter(new RangeFilter('retryCount', [
-            RangeFilter::LT => self::MAX_RETRY_COUNT
+            RangeFilter::LT => self::MAX_RETRY_COUNT,
         ]));
         $criteria->addAssociation('salesChannel');
 

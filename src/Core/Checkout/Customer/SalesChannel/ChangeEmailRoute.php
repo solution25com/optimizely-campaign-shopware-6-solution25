@@ -17,11 +17,6 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 class ChangeEmailRoute extends ChangeEmailRouteParent
 {
     /**
-     * @var ChangeEmailRouteParent
-     */
-    private $parent;
-
-    /**
      * @var EventDispatcherInterface
      */
     protected $eventDispatcher;
@@ -30,6 +25,11 @@ class ChangeEmailRoute extends ChangeEmailRouteParent
      * @var EntityRepository
      */
     protected $customerRepository;
+
+    /**
+     * @var ChangeEmailRouteParent
+     */
+    private $parent;
 
     public function __construct(
         ChangeEmailRouteParent $parent,
@@ -44,19 +44,11 @@ class ChangeEmailRoute extends ChangeEmailRouteParent
         $this->parent = $parent;
     }
 
-    /**
-     * @param RequestDataBag $requestDataBag
-     * @param SalesChannelContext $context
-     * @param CustomerEntity $customer
-     * @return SuccessResponse
-     */
     public function change(
         RequestDataBag $requestDataBag,
         SalesChannelContext $context,
         ?CustomerEntity $customer = null
-    ): SuccessResponse
-    {
-
+    ): SuccessResponse {
         $oldEmail = $context->getCustomer()->getEmail();
         $response = $this->parent->change($requestDataBag, $context, $customer);
 

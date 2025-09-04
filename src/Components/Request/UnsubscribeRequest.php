@@ -17,7 +17,7 @@ class UnsubscribeRequest extends AbstractOptimizelyRequest
     public function getData(): array
     {
         return [
-            'bmRecipientId' => $this->getEmail()
+            'bmRecipientId' => $this->getEmail(),
         ];
     }
 
@@ -31,17 +31,11 @@ class UnsubscribeRequest extends AbstractOptimizelyRequest
         return 'unsubscribe';
     }
 
-    /**
-     * @return string
-     */
     public function getEmail(): string
     {
         return $this->email;
     }
 
-    /**
-     * @param string $email
-     */
     public function setEmail(string $email): void
     {
         $this->email = $email;

@@ -62,85 +62,55 @@ class SubscribeRequest extends AbstractOptimizelyRequest
             'customer-group' => $this->getCustomerGroup(),
             'vatid' => $this->getVatId(),
             'country' => $this->getCountryIso(),
-            'language' => $this->getLanguage()
+            'language' => $this->getLanguage(),
         ];
     }
 
-    /**
-     * @return string
-     */
     public function getShopId(): string
     {
         return $this->shopId;
     }
 
-    /**
-     * @param string $shopId
-     */
     public function setShopId(string $shopId): void
     {
         $this->shopId = $shopId;
     }
 
-    /**
-     * @return string
-     */
     public function getShop(): string
     {
         return $this->shop;
     }
 
-    /**
-     * @param string $shop
-     */
     public function setShop(string $shop): void
     {
         $this->shop = $shop;
     }
 
-    /**
-     * @return string
-     */
     public function getBmOptInId(): string
     {
         return $this->bmOptInId;
     }
 
-    /**
-     * @param string $bmOptInId
-     */
     public function setBmOptInId(string $bmOptInId): void
     {
         $this->bmOptInId = $bmOptInId;
     }
 
-    /**
-     * @return string
-     */
     public function getCustomerHash(): string
     {
         return $this->customerHash;
     }
 
-    /**
-     * @param string $customerHash
-     */
     public function setCustomerHash(string $customerHash): void
     {
         $this->customerHash = $customerHash;
     }
 
-    /**
-     * @return string
-     */
     public function getBmOptinSource(): string
     {
         return $this->bmOptinSource;
     }
 
-    /**
-     * @param string $bmOptinSource
-     */
     public function setBmOptinSource(string $bmOptinSource): void
     {
         $this->bmOptinSource = $bmOptinSource;

@@ -2,10 +2,10 @@
 
 namespace OptimizelyCampaign\Service;
 
-use OptimizelyCampaign\Components\OptimizelyAPI;
 use OptimizelyCampaign\Components\Builder\SubscribeRequestBuilder;
 use OptimizelyCampaign\Components\Builder\UnsubscribeRequestBuilder;
 use OptimizelyCampaign\Components\Builder\UpdateFieldsRequestBuilder;
+use OptimizelyCampaign\Components\OptimizelyAPI;
 use OptimizelyCampaign\Event\NewsletterUnsubscribeEvent;
 use OptimizelyCampaign\OptimizelyCampaign;
 use Psr\Log\LoggerInterface;
@@ -22,6 +22,11 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class NewsletterService
 {
+    /**
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
+
     /**
      * @var OptimizelyAPI
      */
@@ -62,23 +67,17 @@ class NewsletterService
      */
     private $customerRepository;
 
-    /**
-     * @var EventDispatcherInterface
-     */
-    protected $eventDispatcher;
-
     public function __construct(
-        OptimizelyAPI            $optimizelyAPI,
-        SystemConfigService      $systemConfigService,
-        EntityRepository         $newsletterRecipientRepository,
-        EntityRepository         $salesChannelRepository,
-        EntityRepository         $errorQueueRepository,
-        EntityRepository         $customerRepository,
-        LoggerInterface          $logger,
-        ContainerInterface       $container,
+        OptimizelyAPI $optimizelyAPI,
+        SystemConfigService $systemConfigService,
+        EntityRepository $newsletterRecipientRepository,
+        EntityRepository $salesChannelRepository,
+        EntityRepository $errorQueueRepository,
+        EntityRepository $customerRepository,
+        LoggerInterface $logger,
+        ContainerInterface $container,
         EventDispatcherInterface $eventDispatcher
-    )
-    {
+    ) {
         $this->optimizelyAPI = $optimizelyAPI;
         $this->systemConfigService = $systemConfigService;
         $this->newsletterRecipientRepository = $newsletterRecipientRepository;
@@ -90,7 +89,7 @@ class NewsletterService
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    public function sendSubscribeRequest(NewsletterRecipientEntity $newsletterRecipient, Context $context)
+    public function sendSubscribeRequest(NewsletterRecipientEntity $newsletterRecipient, Context $context): void
     {
         $requestBuilder = new SubscribeRequestBuilder(
             $newsletterRecipient,
@@ -106,9 +105,8 @@ class NewsletterService
 
     public function changeStatusToWaitingForActivation(
         NewsletterRecipientEntity $newsletterRecipient,
-        Context                   $context
-    )
-    {
+        Context $context
+    ): void {
         $this->changeRecipientStatus(
             $newsletterRecipient->getId(),
             NewsletterSubscribeRoute::STATUS_NOT_SET,
@@ -116,11 +114,11 @@ class NewsletterService
         );
     }
 
-    public function unsubscribeByOptInId(string $optInId, string $salesChannelId, Context $context)
+    public function unsubscribeByOptInId(string $optInId, string $salesChannelId, Context $context): void
     {
         $newsletterRecipient = $this->findNewsletterRecipient($optInId, $salesChannelId, $context);
         if (!($newsletterRecipient instanceof NewsletterRecipientEntity)) {
-            throw new UnsubscriptionConfirmationException("OptimizelyCampaign.recipientWrongData");
+            throw new UnsubscriptionConfirmationException('OptimizelyCampaign.recipientWrongData');
         }
 
         $this->changeRecipientStatus(
@@ -132,7 +130,7 @@ class NewsletterService
         $this->sendUnsubscribeRequest($newsletterRecipient->getEmail(), $salesChannelId, $context);
     }
 
-    public function sendUnsubscribeRequest(string $email, string $salesChannelId, Context $context)
+    public function sendUnsubscribeRequest(string $email, string $salesChannelId, Context $context): void
     {
         $requestBuilder = new UnsubscribeRequestBuilder(
             $email,
@@ -145,7 +143,7 @@ class NewsletterService
         $this->optimizelyAPI->request($requestBuilder->build());
     }
 
-    public function sendRecipientDataSynchronizationRequest(NewsletterRecipientEntity $newsletterRecipient, Context $context)
+    public function sendRecipientDataSynchronizationRequest(NewsletterRecipientEntity $newsletterRecipient, Context $context): void
     {
         $requestBuilder = new UpdateFieldsRequestBuilder(
             $this->logger,
@@ -159,10 +157,9 @@ class NewsletterService
         $this->optimizelyAPI->request($requestBuilder->build());
     }
 
-    public function synchronizeCustomerData(string $customerId, Context $context)
+    public function synchronizeCustomerData(string $customerId, Context $context): void
     {
-
-        //$customer = $this->getCustomer($customerId, $context);
+        // $customer = $this->getCustomer($customerId, $context);
         $customer = $this->getCustomerWithBillingAddress($customerId, $context);
         if ($customer instanceof CustomerEntity) {
             $newsletterRecipient = $this->getNewsletterRecipientByEmail($customer->getEmail(), $context);
@@ -173,7 +170,7 @@ class NewsletterService
         }
     }
 
-    public function removeNewsletterRecipientByEmail(string $email, Context $context)
+    public function removeNewsletterRecipientByEmail(string $email, Context $context): void
     {
         $newsletterRecipient = $this->getNewsletterRecipientByEmail($email, $context);
         if ($newsletterRecipient instanceof NewsletterRecipientEntity) {
@@ -181,9 +178,8 @@ class NewsletterService
         }
     }
 
-    public function replaceNewsletterRecipientEmail(string $oldEmail, string $newEmail, Context $context)
+    public function replaceNewsletterRecipientEmail(string $oldEmail, string $newEmail, Context $context): void
     {
-
         $oldNewsletterRecipient = $this->getNewsletterRecipientByEmail($oldEmail, $context);
         $newNewsletterRecipient = $this->getNewsletterRecipientByEmail($newEmail, $context);
 
@@ -191,7 +187,6 @@ class NewsletterService
             if ($newNewsletterRecipient instanceof NewsletterRecipientEntity) {
                 $this->removeNewsletterRecipient($oldNewsletterRecipient, $context);
             } else {
-
                 $this->sendUnsubscribeRequest(
                     $oldNewsletterRecipient->getEmail(),
                     $oldNewsletterRecipient->getSalesChannelId(),
@@ -202,8 +197,8 @@ class NewsletterService
                     [
                         'id' => $oldNewsletterRecipient->getId(),
                         'email' => $oldNewsletterRecipient->getEmail(),
-                        'status' => NewsletterSubscribeRoute::STATUS_NOT_SET
-                    ]
+                        'status' => NewsletterSubscribeRoute::STATUS_NOT_SET,
+                    ],
                 ], $context);
 
                 $this->sendSubscribeRequest($oldNewsletterRecipient, $context);
@@ -214,28 +209,25 @@ class NewsletterService
                 $this->customerRepository->update([
                     [
                         'id' => $customer->getId(),
-                        'newsletter' => true
-                    ]
+                        'newsletter' => true,
+                    ],
                 ], $context);
             }
         }
     }
 
-
-    public function replaceNewsletterRecipientEmailSubscriber(string $oldEmail, string $newEmail, Context $context)
+    public function replaceNewsletterRecipientEmailSubscriber(string $oldEmail, string $newEmail, Context $context): void
     {
-
         $customer = $this->getCustomerByEmail($oldEmail, $context);
-        //this fucntion is used only if there is no Customer.
+        // this fucntion is used only if there is no Customer.
 
         if ($customer !== null) {
             return;
         }
-        //Change Email of Subscriber!
+        // Change Email of Subscriber!
         $newNewsletterRecipient = $this->getNewsletterRecipientByEmail($newEmail, $context);
 
         if ($newNewsletterRecipient !== null) {
-
             $this->sendUnsubscribeRequest(
                 $oldEmail,
                 $newNewsletterRecipient->getSalesChannelId(),
@@ -245,38 +237,36 @@ class NewsletterService
                 [
                     'id' => $newNewsletterRecipient->getId(),
                     'email' => $newNewsletterRecipient->getEmail(),
-                    'status' => NewsletterSubscribeRoute::STATUS_NOT_SET
-                ]
+                    'status' => NewsletterSubscribeRoute::STATUS_NOT_SET,
+                ],
             ], $context);
             $this->sendSubscribeRequest($newNewsletterRecipient, $context);
-
         }
-
     }
 
-    public function confirmSubscription(string $optInId, string $shopId, string $shop, Context $context)
+    public function confirmSubscription(string $optInId, string $shopId, string $shop, Context $context): void
     {
         if (empty($optInId)) {
-            throw new SubscriptionConfirmationException("OptimizelyCampaign.recipientWrongData");
+            throw new SubscriptionConfirmationException('OptimizelyCampaign.recipientWrongData');
         }
         if (empty($shopId) && empty($shop)) {
-            throw new SubscriptionConfirmationException("OptimizelyCampaign.recipientWrongData");
+            throw new SubscriptionConfirmationException('OptimizelyCampaign.recipientWrongData');
         }
 
         if (empty($shopId)) {
             $shopId = $this->findSalesChannelIdByName($shop, $context);
             if (empty($shopId)) {
-                throw new SubscriptionConfirmationException("OptimizelyCampaign.recipientWrongData");
+                throw new SubscriptionConfirmationException('OptimizelyCampaign.recipientWrongData');
             }
         }
 
         $newsletterRecipient = $this->findNewsletterRecipient($optInId, $shopId, $context);
         if (!($newsletterRecipient instanceof NewsletterRecipientEntity)) {
-            throw new SubscriptionConfirmationException("OptimizelyCampaign.recipientWrongData");
+            throw new SubscriptionConfirmationException('OptimizelyCampaign.recipientWrongData');
         }
 
         if ($newsletterRecipient->getStatus() === NewsletterSubscribeRoute::STATUS_OPT_IN) {
-            throw new SubscriptionConfirmationException("OptimizelyCampaign.recipientAlreadyRegistered");
+            throw new SubscriptionConfirmationException('OptimizelyCampaign.recipientAlreadyRegistered');
         }
 
         $this->changeRecipientStatus(
@@ -286,7 +276,7 @@ class NewsletterService
         );
     }
 
-    public function addFlash(string $type, string $snippet, array $parameters = [])
+    public function addFlash(string $type, string $snippet, array $parameters = []): void
     {
         if (!$this->container->has('session')) {
             return;
@@ -306,11 +296,10 @@ class NewsletterService
     }
 
     protected function findNewsletterRecipient(
-        string  $optInId,
-        string  $salesChannelId,
+        string $optInId,
+        string $salesChannelId,
         Context $context
-    ): ?NewsletterRecipientEntity
-    {
+    ): ?NewsletterRecipientEntity {
         $criteria = new Criteria();
         $criteria->addFilter(
             new EqualsFilter('customFields.' . OptimizelyCampaign::NEWSLETTER_RECIPIENT_OPTIVO_OPT_IN_ID, $optInId)
@@ -323,55 +312,15 @@ class NewsletterService
     protected function findSalesChannelIdByName(string $salesChannelName, Context $context): ?string
     {
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter("name", $salesChannelName));
+        $criteria->addFilter(new EqualsFilter('name', $salesChannelName));
 
         return $this->salesChannelRepository->searchIds($criteria, $context)->firstId();
     }
 
-    /**
-     * This function is called if the Customer data have been changed, to sync chnages in NewsletterRecipientEntity
-     * @param NewsletterRecipientEntity $newsletterRecipientEntity
-     * @param CustomerEntity $customerEntity
-     * @param Context $context
-     * @return void
-     */
-    private function updateRecipientData(NewsletterRecipientEntity $newsletterRecipientEntity, CustomerEntity $customerEntity, Context $context): void
-    {
-        $data = [
-            'id' => $newsletterRecipientEntity->getId(),
-            'lastName' => $customerEntity->getLastName() ?? '',
-            'firstName' => $customerEntity->getFirstName() ?? '',
-            'zipCode' => $customerEntity->getDefaultBillingAddress()->getZipcode() ?? '',
-            'city' => $customerEntity->getDefaultBillingAddress()->getCity() ?? '',
-            'street' => $customerEntity->getDefaultBillingAddress()->getStreet() ?? ''
-        ];
-
-        $this->newsletterRecipientRepository->update([$data], $context);
-    }
-
-    private function changeRecipientStatus(
-        string  $newsletterRecipientId,
-        string  $newStatus,
-        Context $context
-    )
-    {
-        $data = [
-            'id' => $newsletterRecipientId,
-            'status' => $newStatus
-        ];
-
-        if ($newStatus === NewsletterSubscribeRoute::STATUS_OPT_IN) {
-            $data['confirmedAt'] = new \DateTime('now');
-        }
-
-        $this->newsletterRecipientRepository->update([$data], $context);
-    }
-
     protected function getNewsletterRecipient(
-        string  $newsletterRecipientId,
+        string $newsletterRecipientId,
         Context $context
-    ): ?NewsletterRecipientEntity
-    {
+    ): ?NewsletterRecipientEntity {
         $criteria = new Criteria([$newsletterRecipientId]);
 
         return $this->newsletterRecipientRepository->search($criteria, $context)->first();
@@ -388,9 +337,6 @@ class NewsletterService
 
     /**
      * Returns the CustomerEntity with ActiveBillingAddress to update the NewsletterRecipientEntity
-     * @param string $customerId
-     * @param Context $context
-     * @return CustomerEntity|null
      */
     protected function getCustomerWithBillingAddress(string $customerId, Context $context): ?CustomerEntity
     {
@@ -424,13 +370,46 @@ class NewsletterService
 
     protected function removeNewsletterRecipient(
         NewsletterRecipientEntity $newsletterRecipient,
-        Context                   $context
-    )
-    {
+        Context $context
+    ): void {
         $this->newsletterRecipientRepository->delete([
-            ['id' => $newsletterRecipient->getId()]
+            ['id' => $newsletterRecipient->getId()],
         ], $context);
 
         $this->eventDispatcher->dispatch(new NewsletterUnsubscribeEvent($context, $newsletterRecipient));
+    }
+
+    /**
+     * This function is called if the Customer data have been changed, to sync chnages in NewsletterRecipientEntity
+     */
+    private function updateRecipientData(NewsletterRecipientEntity $newsletterRecipientEntity, CustomerEntity $customerEntity, Context $context): void
+    {
+        $data = [
+            'id' => $newsletterRecipientEntity->getId(),
+            'lastName' => $customerEntity->getLastName() ?? '',
+            'firstName' => $customerEntity->getFirstName() ?? '',
+            'zipCode' => $customerEntity->getDefaultBillingAddress()->getZipcode() ?? '',
+            'city' => $customerEntity->getDefaultBillingAddress()->getCity() ?? '',
+            'street' => $customerEntity->getDefaultBillingAddress()->getStreet() ?? '',
+        ];
+
+        $this->newsletterRecipientRepository->update([$data], $context);
+    }
+
+    private function changeRecipientStatus(
+        string $newsletterRecipientId,
+        string $newStatus,
+        Context $context
+    ): void {
+        $data = [
+            'id' => $newsletterRecipientId,
+            'status' => $newStatus,
+        ];
+
+        if ($newStatus === NewsletterSubscribeRoute::STATUS_OPT_IN) {
+            $data['confirmedAt'] = new \DateTime('now');
+        }
+
+        $this->newsletterRecipientRepository->update([$data], $context);
     }
 }
