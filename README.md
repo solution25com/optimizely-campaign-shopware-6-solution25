@@ -15,6 +15,11 @@ Boost your email marketing automation in Shopware 6. Sync customer data, automat
 
 ---
 
+## Compatibility
+- ✅ Shopware 6.5+
+
+---
+
 ##  Get Started
 
 ### Installation & Activation :
